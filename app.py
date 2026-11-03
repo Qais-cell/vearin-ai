@@ -19,55 +19,12 @@ html, body, .stApp {
     50% { text-shadow: 0 0 22px rgba(255, 255, 255, 0.9), 0 0 35px rgba(255, 215, 0, 0.3); }
 }
 .grok-title {
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 800;
     color: #ffffff;
-    text-align: center;
     letter-spacing: -0.5px;
     animation: floatGlow 3s infinite ease-in-out;
-    margin-top: 10px;
 }
 .grok-sub {
-    font-size: 13px;
-    color: #a1a1aa;
-    text-align: center;
-    margin-bottom: 20px;
-}
-.grok-card {
-    background: linear-gradient(145deg, #09090b 0%, #121215 100%);
-    border: 1px solid #27272a;
-    border-radius: 14px;
-    padding: 18px;
-    margin-bottom: 12px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
-}
-.stButton>button {
-    background: linear-gradient(135deg, #ffffff 0%, #d4d4d8 100%) !important;
-    color: #000000 !important;
-    font-weight: 800 !important;
-    border-radius: 10px !important;
-    border: none !important;
-    padding: 10px 14px !important;
-    width: 100%;
-    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.15);
-}
-.stTextInput input, .stTextArea textarea {
-    background-color: #09090b !important;
-    color: #ffffff !important;
-    border: 1px solid #27272a !important;
-    border-radius: 10px !important;
-}
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
-</style>
-""", unsafe_allow_html=True)
-
-if "tab" not in st.session_state:
-    st.session_state.tab = "المسارات"
-
-col_t1, col_t2, col_t3 = st.columns(3)
-
-with col_t1:
-    if st.button("📚 المسارات", key="tab1"):
-        st.session_state.tab = "المسارات"
-        
+    font-size: 11px;
+    color: #
