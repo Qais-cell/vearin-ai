@@ -22,7 +22,7 @@ def is_valid_email(email):
 
 # --- 1. مرحلة الأنترو التحريكي المطول والأسطوري ---
 if st.session_state.show_intro and not st.session_state.logged_in:
-    st.markdown("""
+    intro_html = """
         <style>
         @keyframes introFlow {
             0% { opacity: 0; transform: scale(0.92); filter: blur(8px); }
@@ -54,4 +54,33 @@ if st.session_state.show_intro and not st.session_state.logged_in:
             font-weight: 800;
             background: linear-gradient(135deg, #f0f6fc 0%, #58a6ff 50%, #1f6feb 100%);
             -webkit-background-clip: text;
-            -webkit-text-
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+            letter-spacing: -2px;
+        }
+        .intro-desc {
+            font-size: 15px;
+            color: #8b949e;
+            font-weight: 400;
+            letter-spacing: 1px;
+        }
+        </style>
+        <div class="auto-intro">
+            <div class="intro-logo">VÆRIN AI</div>
+            <div class="intro-desc">Autonomous Academic Intelligence & Research Workspace</div>
+        </div>
+    """
+    st.markdown(intro_html, unsafe_allow_html=True)
+    
+    time.sleep(3.6)
+    st.session_state.show_intro = False
+    st.session_state.show_setup = True
+    st.rerun()
+
+# --- 2. مرحلة تخصيص الأهداف الدراسية وأسلوب التطبيق ---
+if st.session_state.show_setup and not st.session_state.logged_in:
+    st.markdown("""
+        <style>
+        .stApp {
+            background: #0d1117;
+            color:
