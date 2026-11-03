@@ -1,12 +1,20 @@
 import streamlit as st
 from groq import Groq
+import re
 
+# إعدادات الصفحة
 st.set_page_config(page_title="VAERIN Ultimate Pro", page_icon=None, layout="centered")
 
+# تهيئة حالة جلسة تسجيل الدخول الحقيقي
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
-if "selected_provider" not in st.session_state:
-    st.session_state.selected_provider = ""
+if "user_email" not in st.session_state:
+    st.session_state.user_email = ""
+
+# وظيفة للتحقق من صحة البريد الإلكتروني الحقيقي
+def is_valid_email(email):
+    pattern = r"^[\w\.-]+@[\w\.-]+\.\w+$"
+    return re.match(pattern, email) is not None
 
 if not st.session_state.logged_in:
     st.markdown("""
@@ -16,6 +24,13 @@ if not st.session_state.logged_in:
             color: #c9d1d9;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
+        .stTextInput input {
+            background-color: #161b22 !important;
+            color: #c9d1d9 !important;
+            border: 1px solid #30363d !important;
+            border-radius: 8px !important;
+            padding: 10px !important;
+        }
         .stButton button {
             background-color: #21262d !important;
             color: #c9d1d9 !important;
@@ -23,7 +38,7 @@ if not st.session_state.logged_in:
             border-radius: 8px !important;
             border: 1px solid rgba(240, 246, 252, 0.15) !important;
             width: 100%;
-            margin-bottom: 12px;
+            margin-top: 10px;
             padding: 12px;
             font-size: 14px;
         }
@@ -39,25 +54,22 @@ if not st.session_state.logged_in:
     with col2:
         st.markdown("<br><br>", unsafe_allow_html=True)
         st.markdown("<h2 style='text-align: center; color: #f0f6fc; font-weight: 600;'>VÆRIN Academic</h2>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align: center; color: #8b949e; font-size: 13px; margin-bottom: 30px;'>Sign in to access your professional academic workspace</p>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; color: #8b949e; font-size: 13px; margin-bottom: 25px;'>Enter your verified email address to securely access your workspace</p>", unsafe_allow_html=True)
         
-        if st.button("Continue with Google Account"):
-            st.session_state.logged_in = True
-            st.session_state.selected_provider = "Google Account"
-            st.rerun()
-            
-        if st.button("Continue with Apple ID"):
-            st.session_state.logged_in = True
-            st.session_state.selected_provider = "Apple ID"
-            st.rerun()
-
-        if st.button("Continue with University Email"):
-            st.session_state.logged_in = True
-            st.session_state.selected_provider = "University ID"
-            st.rerun()
-            
+        # حقل إدخال البريد الإلكتروني الحقيقي
+        email_input = st.text_input("Email Address", placeholder="name@example.com")
+        
+        if st.button("Authenticate & Enter"):
+            if is_valid_email(email_input):
+                st.session_state.logged_in = True
+                st.session_state.user_email = email_input
+                st.rerun()
+            else:
+                st.error("الرجاء إدخال بريد إلكتروني حقيقي وصحيح (يحتوي على @ والنطاق).")
+                
     st.stop()
 
+# --- واجهة الدردشة الأساسية عند نجاح المصادقة الحقيقية ---
 st.markdown("""
     <style>
     html, body, [class*="css"] {
@@ -83,11 +95,12 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.title("VAERIN - Advanced Academic System")
-st.write("System online. Direct access granted. Memory and security active.")
+st.write(f"System online. Authenticated user: **{st.session_state.get('user_email', '')}**")
 
+# --- الشريط الجانبي ---
 with st.sidebar:
     st.header("System Controls")
-    st.write(f"Connected via: **{st.session_state.get('selected_provider', 'Authorized Session')}**")
+    st.write(f"User: **{st.session_state.get('user_email', '')}**")
     
     st.markdown("---")
     st.subheader("Admin Configuration")
@@ -107,8 +120,10 @@ with st.sidebar:
         
     if st.button("Sign out"):
         st.session_state.logged_in = False
+        st.session_state.user_email = ""
         st.rerun()
 
+# معالجة الشات والاتصال المباشر
 if not admin_api_key:
     st.warning("الرجاء التأكد من إدخال مفتاح Groq API في الشريط الجانبي.")
 else:
@@ -127,29 +142,3 @@ else:
                     )
                 }
             ]
-
-        for message in st.session_state.messages:
-            if message["role"] != "system":
-                with st.chat_message(message["role"]):
-                    st.write(message["content"])
-
-        if user_query := st.chat_input("Type your academic query here..."):
-            st.session_state.messages.append({"role": "user", "content": user_query})
-            with st.chat_message("user"):
-                st.write(user_query)
-
-            with st.spinner("Analyzing and retrieving context..."):
-                chat_completion = client.chat.completions.create(
-                    messages=st.session_state.messages,
-                    model="llama3-70b-8192",
-                    temperature=temperature,
-                    max_tokens=max_tokens_val,
-                )
-                
-                assistant_answer = chat_completion.choices[0].message.content
-                st.session_state.messages.append({"role": "assistant", "content": assistant_answer})
-                with st.chat_message("assistant"):
-                    st.write(assistant_answer)
-
-    except Exception as e:
-        st.error(f"خطأ في الاتصال أو مفتاح API غير صالح. التفاصيل: {e}")
