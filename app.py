@@ -73,39 +73,4 @@ if st.session_state.step == "setup":
         
         academic_style = st.radio(
             "Scholarly Interaction Mode:",
-            ["صارم وأكاديمي بحت (بدون حشو)", "أكاديمي توجيهي مع أمثلة تفصيلية"]
-        )
-        
-        if st.button("Continue to Authentication"):
-            st.session_state.study_goal = goal_selection
-            st.session_state.academic_style = academic_style
-            st.session_state.step = "login"
-            st.rerun()
-            
-    st.stop()
-
-# --- 2. شاشة تسجيل الدخول الحقيقي ---
-if st.session_state.step == "login" and not st.session_state.logged_in:
-    st.markdown("""
-        <style>
-        .stApp {
-            background: #0d1117;
-            color: #c9d1d9;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
-        .stTextInput input {
-            background-color: #161b22 !important;
-            color: #c9d1d9 !important;
-            border: 1px solid #30363d !important;
-            border-radius: 8px !important;
-            padding: 12px !important;
-        }
-        .stButton button {
-            background-color: #21262d !important;
-            color: #c9d1d9 !important;
-            font-weight: 600;
-            border-radius: 8px !important;
-            border: 1px solid rgba(240, 246, 252, 0.15) !important;
-            width: 100%;
-            margin-top: 10px;
-            padding: 12px;
+            ["صارم وأكاديمي بحت (بدون حشو)", "أكاديمي توجيهي مع أمثلة تفصيل
