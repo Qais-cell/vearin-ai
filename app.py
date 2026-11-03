@@ -3,208 +3,278 @@ from groq import Groq
 import re
 import time
 
-st.set_page_config(page_title="VÆRIN AI - Neural Academic System", page_icon=None, layout="centered")
+st.set_page_config(page_title="VÆRIN Neural Console", page_icon=None, layout="centered")
 
 if "app_state" not in st.session_state:
     st.session_state.app_state = "intro"
 if "user_email" not in st.session_state:
     st.session_state.user_email = ""
-if "study_goal" not in st.session_state:
-    st.session_state.study_goal = "بحث علمي متقدم وتحليل عميق للنظريات"
-if "scholarly_mode" not in st.session_state:
-    st.session_state.scholarly_mode = "صارم وأكاديمي بحت (بدون حشو)"
+if "active_prompt" not in st.session_state:
+    st.session_state.active_prompt = "بحث علمي متقدم وتحليل عميق للنظريات"
 
 def is_valid_email(email):
     pattern = r"^[\w\.-]+@[\w\.-]+\.\w+$"
     return re.match(pattern, email) is not None
 
-# التصميم الأسطوري والأنيميشن النابض بالحياة (Groq/Gemini Style)
+# --- تصميم واجهة xAI / Groq Console الخرافية ---
 st.markdown("""
     <style>
     @keyframes pulseGlow {
-        0% { opacity: 0.3; transform: scale(0.97); filter: drop-shadow(0 0 5px rgba(88,166,255,0.3)); }
-        50% { opacity: 1; transform: scale(1.03); filter: drop-shadow(0 0 35px rgba(88,166,255,0.8)); }
-        100% { opacity: 0.3; transform: scale(0.97); filter: drop-shadow(0 0 5px rgba(88,166,255,0.3)); }
+        0% { opacity: 0.3; transform: scale(0.97); filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)); }
+        50% { opacity: 1; transform: scale(1.02); filter: drop-shadow(0 0 25px rgba(255,255,255,0.5)); }
+        100% { opacity: 0.3; transform: scale(0.97); filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)); }
     }
-    @keyframes textShimmer {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-    }
-    @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(20px); }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
         to { opacity: 1; transform: translateY(0); }
     }
     .stApp {
-        background: radial-gradient(circle at center, #161b22 0%, #0d1117 100%);
-        color: #c9d1d9;
+        background: #000000;
+        color: #e6edf3;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
     .intro-screen {
         text-align: center;
-        padding: 120px 20px;
-        animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        padding: 130px 20px;
+        animation: fadeIn 0.8s ease-out;
     }
     .intro-logo {
-        font-size: 56px;
+        font-size: 54px;
         font-weight: 900;
-        background: linear-gradient(135deg, #f0f6fc 0%, #58a6ff 30%, #1f6feb 70%, #58a6ff 100%);
-        background-size: 200% auto;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 15px;
-        animation: pulseGlow 3s infinite ease-in-out, textShimmer 4s infinite linear;
+        color: #ffffff;
+        margin-bottom: 12px;
+        animation: pulseGlow 3s infinite ease-in-out;
         letter-spacing: -2px;
     }
     .intro-desc {
-        font-size: 16px;
-        color: #8b949e;
+        font-size: 15px;
+        color: #848d97;
         font-weight: 400;
-        letter-spacing: 1px;
-        animation: pulseGlow 4s infinite ease-in-out;
     }
-    .pulsing-title {
+    .console-header {
+        font-size: 22px;
+        font-weight: 700;
+        color: #ffffff;
         text-align: center;
-        font-size: 28px;
-        font-weight: 800;
-        background: linear-gradient(135deg, #f0f6fc 0%, #58a6ff 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 8px;
-        animation: pulseGlow 4s infinite ease-in-out;
+        margin-bottom: 5px;
     }
-    .sub-title {
-        text-align: center;
+    .console-sub {
         font-size: 13px;
-        color: #8b949e;
+        color: #848d97;
+        text-align: center;
         margin-bottom: 25px;
     }
-    .stTextInput input {
-        background-color: #161b22 !important;
-        color: #c9d1d9 !important;
-        border: 1px solid #30363d !important;
+    /* تصميم الكاردات بنفس نمط xAI Console */
+    .xai-card {
+        background: #121212;
+        border: 1px solid #212121;
+        border-radius: 14px;
+        padding: 18px 20px;
+        margin-bottom: 14px;
+        transition: all 0.25s ease;
+    }
+    .xai-card:hover {
+        border-color: #3b3b3b;
+        background: #161616;
+        transform: translateY(-2px);
+    }
+    .card-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .card-desc {
+        font-size: 13px;
+        color: #848d97;
+        line-height: 1.4;
+    }
+    .badge {
+        display: inline-block;
+        background: #212121;
+        color: #c9d1d9;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 20px;
+        margin-top: 10px;
+        border: 1px solid #30363d;
+    }
+    .stTextInput input, .stTextArea textarea {
+        background-color: #121212 !important;
+        color: #ffffff !important;
+        border: 1px solid #262626 !important;
         border-radius: 12px !important;
         padding: 14px !important;
-        transition: all 0.3s ease;
     }
-    .stTextInput input:focus {
-        border-color: #58a6ff !important;
-        box-shadow: 0 0 0 4px rgba(88, 166, 255, 0.15);
+    .stTextInput input:focus, .stTextArea textarea:focus {
+        border-color: #ffffff !important;
+        box-shadow: 0 0 0 2px rgba(255,255,255,0.1);
     }
     .stButton button {
-        background: linear-gradient(135deg, #238636 0%, #2ea043 100%) !important;
-        color: #ffffff !important;
-        font-weight: 600;
-        border-radius: 12px !important;
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        font-weight: 700;
+        border-radius: 10px !important;
         border: none !important;
         width: 100%;
-        margin-top: 15px;
-        padding: 14px;
-        box-shadow: 0 8px 24px rgba(35, 134, 54, 0.4);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        padding: 12px;
+        transition: all 0.2s ease;
     }
     .stButton button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 12px 32px rgba(46, 160, 67, 0.6);
-        filter: brightness(1.1);
+        background-color: #d0d7de !important;
+        transform: scale(1.01);
     }
     .stChatMessage {
-        background: #161b22;
-        border: 1px solid #30363d;
+        background: #121212;
+        border: 1px solid #212121;
         border-radius: 12px;
         padding: 18px;
-        margin-bottom: 16px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-    }
-    h1, h2, h3 {
-        color: #f0f6fc;
-        font-weight: 600;
+        margin-bottom: 14px;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# --- 1. الأنترو النابض والتلقائي (Groq/Gemini Style) ---
+# --- 1. الأنترو التلقائي النابض ---
 if st.session_state.app_state == "intro":
     st.markdown("""
         <div class="intro-screen">
-            <div class="intro-logo">VÆRIN AI</div>
-            <div class="intro-desc">Autonomous Academic Intelligence & Neural Workspace</div>
+            <div class="intro-logo">VÆRIN // X</div>
+            <div class="intro-desc">Next-Generation Autonomous Neural Console</div>
         </div>
     """, unsafe_allow_html=True)
-    
-    time.sleep(3.2)
-    st.session_state.app_state = "setup"
+    time.sleep(3.0)
+    st.session_state.app_state = "console_home"
     st.rerun()
 
-# --- 2. إعداد الأهداف الدراسية التفاعلية ---
-elif st.session_state.app_state == "setup":
-    col1, col2, col3 = st.columns([1, 2, 1])
+# --- 2. واجهة الـ Console الرئيسية (بنمط كاردات xAI) ---
+elif st.session_state.app_state == "console_home":
+    col1, col2, col3 = st.columns([1, 2.5, 1])
     with col2:
         st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown('<div class="pulsing-title">Configure Academic Profile</div>', unsafe_allow_html=True)
-        st.markdown('<div class="sub-title">Initialize your custom AI scholarly environment</div>', unsafe_allow_html=True)
+        st.markdown('<div class="console-header">Start a chat with examples</div>', unsafe_allow_html=True)
+        st.markdown('<div class="console-sub">Pick a use case to see the exact prompt and settings, then make it your own.</div>', unsafe_allow_html=True)
         
-        goal_selection = st.selectbox(
-            "Primary Academic Objective:",
-            [
-                "🔬 بحث علمي متقدم وتحليل عميق للنظريات",
-                "📚 شرح المناهج الدراسية وتبسيط المفاهيم المعقدة",
-                "📝 تلخيص المقالات والكتب الأكاديمية بدقة مذهلة",
-                "💻 استشارات برمجية وهندسية وحل الخوارزميات",
-                "📊 تحليل البيانات وإعداد التقارير البحثية"
-            ]
-        )
-        
-        academic_style = st.radio(
-            "Scholarly Interaction Mode:",
-            [
-                "صارم وأكاديمي بحت (بدون حشو أو عبارات دبلوماسية)",
-                "أكاديمي توجيهي متقدم مع أمثلة وتطبيقات تفصيلية"
-            ]
-        )
-        
-        if st.button("Initialize Neural Workspace"):
-            st.session_state.study_goal = goal_selection
-            st.session_state.scholarly_mode = academic_style
+        # كارد 1
+        st.markdown("""
+            <div class="xai-card">
+                <div class="card-title">🔬 Advanced Scientific Research</div>
+                <div class="card-desc">Deep analytical breakdown of complex academic theories and methodologies.</div>
+                <div class="badge">System prompt</div>
+            </div>
+        """, unsafe_allow_html=True)
+        if st.button("Launch: Scientific Research", key="btn1"):
+            st.session_state.active_prompt = "بحث علمي متقدم وتحليل عميق للنظريات"
             st.session_state.app_state = "login"
             st.rerun()
 
-# --- 3. واجهة تسجيل الدخول الآمن ---
+        # كارد 2
+        st.markdown("""
+            <div class="xai-card">
+                <div class="card-title">📚 Curriculum & Theory Summarization</div>
+                <div class="card-desc">Condense heavy academic textbooks and long-form papers into crisp summaries.</div>
+                <div class="badge">System prompt</div>
+            </div>
+        """, unsafe_allow_html=True)
+        if st.button("Launch: Summarize & Explain", key="btn2"):
+            st.session_state.active_prompt = "شرح المناهج الدراسية وتبسيط المفاهيم المعقدة"
+            st.session_state.app_state = "login"
+            st.rerun()
+
+        # كارد 3
+        st.markdown("""
+            <div class="xai-card">
+                <div class="card-title">💻 Code Architecture & Structured Data</div>
+                <div class="card-desc">Extract complex logic or structural schemas from raw technical inputs.</div>
+                <div class="badge">Structured outputs</div>
+            </div>
+        """, unsafe_allow_html=True)
+        if st.button("Launch: Engineering & Code", key="btn3"):
+            st.session_state.active_prompt = "استشارات برمجية وهندسية وحل الخوارزميات بدقة"
+            st.session_state.app_state = "login"
+            st.rerun()
+
+# --- 3. تسجيل الدخول الآمن ---
 elif st.session_state.app_state == "login":
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         st.markdown("<br><br>", unsafe_allow_html=True)
-        st.markdown('<div class="pulsing-title">Secure Authentication</div>', unsafe_allow_html=True)
-        st.markdown('<div class="sub-title">Enter your verified email address to establish session</div>', unsafe_allow_html=True)
+        st.markdown('<div class="console-header">Secure Authentication</div>', unsafe_allow_html=True)
+        st.markdown('<div class="console-sub">Enter your verified email address to initialize console session</div>', unsafe_allow_html=True)
         
         email_input = st.text_input("Email Address", placeholder="name@example.com")
         
-        if st.button("Authenticate & Enter"):
+        if st.button("Authenticate & Enter Console"):
             if is_valid_email(email_input):
                 st.session_state.user_email = email_input
                 st.session_state.app_state = "chat"
                 st.rerun()
             else:
-                st.error("الرجاء إدخال بريد إلكتروني حقيقي وصحيح (يحتوي على @ والنطاق).")
+                st.error("الرجاء إدخال بريد إلكتروني حقيقي وصحيح.")
 
-# --- 4. واجهة الدردشة والتحكم المتقدم ---
+# --- 4. واجهة الدردشة النهائية (Console Chat) ---
 elif st.session_state.app_state == "chat":
-    st.title("VAERIN - Advanced Academic System")
+    st.title("VÆRIN // Neural Console")
 
     with st.sidebar:
-        st.header("Control Panel")
-        st.write(f"Session: **{st.session_state.get('user_email', '')}**")
-        st.write(f"Objective: **{st.session_state.get('study_goal', 'عام')}**")
+        st.header("Console Settings")
+        st.write(f"User: **{st.session_state.get('user_email', '')}**")
+        st.write(f"Mode: **{st.session_state.get('active_prompt', '')}**")
         
         st.markdown("---")
-        st.subheader("API Configuration")
         admin_api_key = st.text_input("Groq API Key:", type="password", value="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")
         
-        st.markdown("---")
-        st.subheader("Advanced Engine Settings")
-        temperature = st.slider("Temperature (Creativity):", 0.0, 1.0, 0.7, 0.1)
-        max_tokens_val = st.slider("Max Response Tokens:", 256, 4096, 1536, 128)
+        temperature = st.slider("Temperature:", 0.0, 1.0, 0.7, 0.1)
+        max_tokens_val = st.slider("Max Tokens:", 256, 4096, 1536, 128)
         
         st.markdown("---")
-        st.subheader("System Behavior")
-        scholarly_mode_
+        if st.button("Back to Console Home"):
+            st.session_state.app_state = "console_home"
+            st.rerun()
+
+    if not admin_api_key:
+        st.warning("الرجاء إدخال مفتاح Groq API في الشريط الجانبي للبدء.")
+    else:
+        try:
+            client = Groq(api_key=admin_api_key)
+            selected_focus = st.session_state.get("active_prompt", "بحث علمي متقدم")
+            
+            if "messages" not in st.session_state:
+                st.session_state.messages = [
+                    {
+                        "role": "system", 
+                        "content": (
+                            f"You are VÆRIN, an advanced neural academic console focused on: '{selected_focus}'. "
+                            "Maintain a strict, scholarly, direct tone without emojis or diplomatic filler."
+                        )
+                    }
+                ]
+
+            for message in st.session_state.messages:
+                if message["role"] != "system":
+                    with st.chat_message(message["role"]):
+                        st.write(message["content"])
+
+            if user_query := st.chat_input("Ask anything or send a prompt..."):
+                st.session_state.messages.append({"role": "user", "content": user_query})
+                with st.chat_message("user"):
+                    st.write(user_query)
+
+                with st.spinner("Synthesizing neural response..."):
+                    chat_completion = client.chat.completions.create(
+                        messages=st.session_state.messages,
+                        model="llama3-70b-8192",
+                        temperature=temperature,
+                        max_tokens=max_tokens_val,
+                    )
+                    
+                    assistant_answer = chat_completion.choices[0].message.content
+                    st.session_state.messages.append({"role": "assistant", "content": assistant_answer})
+                    with st.chat_message("assistant"):
+                        st.write(assistant_answer)
+
+        except Exception as e:
+            st.error(f"خطأ في الاتصال: {e}")
