@@ -11,7 +11,7 @@ api_key = st.text_input("مفتاح API:", type="password")
 if api_key:
     try:
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        model = genai.GenerativeModel("gemini-2.5-flash")
         
         user_query = st.text_input("اطرح سؤالك على VÆRIN:")
         if st.button("إرسال"):
