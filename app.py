@@ -4,7 +4,7 @@ from groq import Groq
 st.set_page_config(page_title="VÆRIN AI", page_icon="🤖")
 
 st.title("🤖 مساعد VÆRIN الذكي (عبر Groq)")
-st.write("أهلاً بك! النظام متصل ومحدث بأحدث النماذج.")
+st.write("أهلاً بك! النظام متصل ومحدث بالنموذج المتوافق.")
 
 api_key = st.text_input("أدخل مفتاح Groq API:", type="password")
 
@@ -16,7 +16,7 @@ if api_key:
         if st.button("إرسال"):
             if user_query:
                 with st.spinner("جاري التوليد بسرعة فائقة..."):
-                    # استخدام أحدث نموذج لاما متوفر ومفتوح للاستخدام المجاني
+                    # استخدام النموذج الكلاسيكي المضمون والمتوافق مع جميع المفاتيح
                     chat_completion = client.chat.completions.create(
                         messages=[
                             {
@@ -24,7 +24,7 @@ if api_key:
                                 "content": user_query,
                             }
                         ],
-                        model="llama-3.3-70b-versatile",
+                        model="llama3-70b-8192",
                     )
                     
                     answer = chat_completion.choices[0].message.content
