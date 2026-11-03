@@ -15,18 +15,20 @@ if api_key:
         user_query = st.text_area("اطرح سؤالك الدراسي أو المادة التي تريد شرحها:")
         if st.button("بدء الشرح والتحليل"):
             if user_query:
-                with st.spinner("جاري إعداد الشرح الأكاديمي بدقة..."):
+                with st.spinner("جاري جلب نموذج المحادثة وإعداد الشرح الأكاديمي..."):
+                    # جلب قائمة النماذج المتاحة فعلياً في حسابك وتجنب النماذج المعطلة أو الحماية
                     models_response = client.models.list()
-                    available_models = [m.id for m in models_response.data]
+                    all_models = [m.id for m in models_response.data]
                     
-                    chat_models = [
-                        m for m in available_models 
-                        if 'llama' in m.lower() and not any(x in m.lower() for x in ['guard', 'prompt', 'vision', 'whisper'])
+                    # تصفية النماذج النشطة المخصصة للشات واستبعاد الأمان والصوت
+                    active_models = [
+                        m for m in all_models 
+                        if not any(x in m.lower() for x in ['guard', 'whisper', 'vision', 'safeguard', 'orpheus', 'audio', 'prompt', 'embedding'])
                     ]
                     
-                    selected_model = chat_models[0] if chat_models else "llama-3.1-8b-instant"
+                    # اختيار أول نموذج نشط حقيقي متوفر في القائمة أو أي موديل بديل يرجع من السيرفر
+                    selected_model = active_models[0] if active_models else all_models[0]
                     
-                    # إعطاء الشخصية الأكاديمية الصارمة للمساعد من خلال الـ system message
                     chat_completion = client.chat.completions.create(
                         messages=[
                             {
@@ -42,10 +44,9 @@ if api_key:
                         max_tokens=1024,
                     )
                     
-                    answer = chat_completion.choices[0]
-                    
-                    st.success("النتيجة الأكاديمية:")
-                    st.write(chat_completion.choices[0].message.content)
+                    answer = chat_completion.choices[0].message.content
+                    st.success(f"النتيجة الأكاديمية (عبر نموذج {selected_model}):")
+                    st.write(answer)
             else:
                 st.warning("الرجاء كتابة السؤال أو المادة الدراسية أولاً.")
     except Exception as e:
