@@ -1,139 +1,68 @@
 import streamlit as st
 
+# ضبط إعدادات الصفحة
 st.set_page_config(
     page_title="VÆRIN Neural Canvas",
     page_icon="⚡",
-    layout="centered"
+    layout="centered",
+    initial_sidebar_state="collapsed"
 )
 
-# --- تصميم الفخامة (Grok-style Dark Neon & Animations) ---
+# --- تصميم أسود وأبيض عائم وفخم (Monochrome Glow & Minimalist) ---
 st.markdown("""
     <style>
-    .stApp {
-        background-color: #000000;
-        color: #f1f5f9;
+    /* خلفية داكنة فخمة بدون أزرق أو بنفسجي */
+    html, body, .stApp {
+        background-color: #000000 !important;
+        color: #f4f4f5;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
     
-    /* انترو البداية والنبض */
-    @keyframes pulseGlow {
-        0%, 100% { text-shadow: 0 0 10px rgba(0, 242, 254, 0.4); }
-        50% { text-shadow: 0 0 25px rgba(121, 40, 202, 0.8); }
+    /* أنيميشن بريق أبيض وفضي عائم للعنوان */
+    @keyframes floatGlow {
+        0%, 100% { text-shadow: 0 0 12px rgba(255, 255, 255, 0.6), 0 0 25px rgba(161, 161, 170, 0.3); }
+        50% { text-shadow: 0 0 22px rgba(255, 255, 255, 0.9), 0 0 35px rgba(255, 215, 0, 0.3); }
     }
     
     .grok-title {
         font-size: 24px;
         font-weight: 800;
         color: #ffffff;
+        text-align: center;
         letter-spacing: -0.5px;
-        animation: pulseGlow 3s infinite ease-in-out;
+        animation: floatGlow 3s infinite ease-in-out;
+        margin-top: 10px;
     }
     
     .grok-sub {
         font-size: 13px;
         color: #a1a1aa;
+        text-align: center;
         margin-bottom: 20px;
     }
 
-    /* تنسيق الكاردات الفخمة */
+    /* كاردات عائمة بتدرجات رمادية وأسود فخم */
     .grok-card {
-        background: #09090b;
-        border: 1px solid #1f1f23;
+        background: linear-gradient(145deg, #09090b 0%, #121215 100%);
+        border: 1px solid #27272a;
         border-radius: 14px;
         padding: 18px;
-        margin-bottom: 14px;
-        transition: all 0.2s ease;
-    }
-    .grok-card:hover {
-        border-color: #00f2fe;
-        background: #0f0f13;
+        margin-bottom: 12px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
     }
     
-    /* أزرار عصرية مطابقة للتصميم */
+    /* أزرار باللون الأبيض والرمادي الداكن العائم */
     .stButton>button {
-        background: linear-gradient(135deg, #00f2fe 0%, #7928ca 100%) !important;
-        color: #ffffff !important;
-        font-weight: 700;
+        background: linear-gradient(135deg, #ffffff 0%, #d4d4d8 100%) !important;
+        color: #000000 !important;
+        font-weight: 800 !important;
         border-radius: 10px !important;
         border: none !important;
-        padding: 10px 16px !important;
+        padding: 10px 14px !important;
         width: 100%;
-        box-shadow: 0 4px 12px rgba(0, 242, 254, 0.2);
-    }
-    .stButton>button:hover {
-        opacity: 0.9;
+        box-shadow: 0 4px 15px rgba(255, 255, 255, 0.15);
+        transition: all 0.2s ease;
     }
     
-    .stTextInput input, .stTextArea textarea {
-        background-color: #09090b !important;
-        color: #ffffff !important;
-        border: 1px solid #27272a !important;
-        border-radius: 10px !important;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
-# إدارة حالة التنقل
-if "tab" not in st.session_state:
-    st.session_state.tab = "المسارات"
-
-# --- التبويبات العلوية (على اليسار بتنسيق فخم ونظيف) ---
-col_t1, col_t2, col_t3, col_space = st.columns([1.2, 1.2, 1.2, 2.5])
-
-with col_t1:
-    if st.button("📚 المسارات", key="btn_tracks"):
-        st.session_state.tab = "المسارات"
-        st.rerun()
-with col_t2:
-    if st.button("📸 المرسم", key="btn_studio"):
-        st.session_state.tab = "المرسم"
-        st.rerun()
-with col_t3:
-    if st.button("🧠 مساعد AI", key="btn_ai"):
-        st.session_state.tab = "مساعد AI"
-        st.rerun()
-
-st.write("---")
-
-# --- محتوى الأقسام ---
-if st.session_state.tab == "المسارات":
-    st.markdown('<div class="grok-title">⚡ VÆRIN // Neural Canvas</div>', unsafe_allow_html=True)
-    st.markdown('<div class="grok-sub">اختر مسار التعلم لبدء جلسة الرسم والتوجيه الحي.</div>', unsafe_allow_html=True)
-    
-    st.markdown("""
-        <div class="grok-card">
-            <h3 style="color: #00f2fe; margin-bottom: 6px; font-size: 16px;">✏️ أساسيات الخطوط والمنظور</h3>
-            <p style="color: #94a3b8; font-size: 13px; margin-bottom: 10px;">ضبط حركة اليد، التحكم بالقلم، ورسم الأشكال الهندسية بدقة عالية.</p>
-        </div>
-    """, unsafe_allow_html=True)
-    if st.button("دخول مسار الأساسيات"):
-        st.session_state.tab = "المرسم"
-        st.rerun()
-
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown("""
-        <div class="grok-card">
-            <h3 style="color: #7928ca; margin-bottom: 6px; font-size: 16px;">🎨 التظليل والواقعية المتقدمة</h3>
-            <p style="color: #94a3b8; font-size: 13px; margin-bottom: 10px;">أسرار تباين الضوء والظل (Chiaroscuro) وتقنيات كبار الرسامين.</p>
-        </div>
-    """, unsafe_allow_html=True)
-    if st.button("دخول مسار التظليل"):
-        st.session_state.tab = "المرسم"
-        st.rerun()
-
-elif st.session_state.tab == "المرسم":
-    st.markdown('<div class="grok-title">📸 استوديو الكاميرا الحي</div>', unsafe_allow_html=True)
-    st.markdown('<div class="grok-sub">كاميرا الذكاء الاصطناعي جاهزة لتحليل خطواتك على الورق.</div>', unsafe_allow_html=True)
-    
-    cam = st.camera_input("التقط صورة لخطوات الرسم:")
-    if cam:
-        st.success("⚡ تم فحص الخطوط والمنظور بنجاح! النسبة الفنية: 92%.")
-
-elif st.session_state.tab == "مساعد AI":
-    st.markdown('<div class="grok-title">🧠 عقل المساعد الذكي</div>', unsafe_allow_html=True)
-    st.markdown('<div class="grok-sub">اسأل أي استفسار فني وسيجيبك النظام فوراً.</div>', unsafe_allow_html=True)
-    
-    q = st.text_input("اكتب سؤالك هنا:", placeholder="مثال: كيف أوزع الإضاءة؟")
-    if st.button("إرسال السؤال"):
-        if q:
-            st.info("🤖 **VÆRIN AI:** لتوزيع الإضاءة بشكل احترافي، حدد زاوية سقوط الضوء وعزز التباين في المناطق العميقة.")
+    .stButton>button:active {
+        
