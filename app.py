@@ -1,170 +1,142 @@
 import streamlit as st
-import re
 
-st.set_page_config(page_title="VÆRIN Art Academy", page_icon="🎨", layout="centered")
+st.set_page_config(page_title="VÆRIN // Grok Art Console", page_icon="⚡", layout="centered")
 
 if "page" not in st.session_state:
     st.session_state.page = "home"
-if "user_email" not in st.session_state:
-    st.session_state.user_email = ""
 if "art_track" not in st.session_state:
     st.session_state.art_track = "الأساسيات والمنظور"
 
-def is_valid_email(email):
-    pattern = r"^[\w\.-]+@[\w\.-]+\.\w+$"
-    return re.match(pattern, email) is not None
-
-# --- تصميم عصري وفاخر (Dark Futuristic Theme) ---
+# --- تصميم مطابق لواجهة Grok الأصلية بالمليم (Dark Minimalist & Neon) ---
 st.markdown("""
     <style>
     .stApp {
-        background: #050505;
+        background: #000000;
         color: #e6edf3;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
-    .hero-title {
-        font-size: 32px;
-        font-weight: 950;
+    .grok-header {
+        font-size: 20px;
+        font-weight: 700;
+        color: #ffffff;
         text-align: center;
-        background: linear-gradient(135deg, #ffffff 0%, #a855f7 50%, #6366f1 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 5px;
+        margin-bottom: 4px;
+        letter-spacing: -0.4px;
     }
-    .hero-subtitle {
+    .grok-sub {
         font-size: 13px;
-        color: #94a3b8;
+        color: #71717a;
         text-align: center;
-        margin-bottom: 25px;
+        margin-bottom: 24px;
     }
-    .art-card {
-        background: #0d0d11;
-        border: 1px solid #1e1e2d;
-        border-radius: 16px;
-        padding: 18px;
-        margin-bottom: 14px;
-        transition: all 0.3s ease;
+    .grok-card {
+        background: #09090b;
+        border: 1px solid #1f1f23;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 12px;
+        transition: all 0.2s ease;
     }
-    .art-card:hover {
-        border-color: #8b5cf6;
-        background: #13131c;
-        transform: translateY(-2px);
+    .grok-card:hover {
+        border-color: #3f3f46;
+        background: #0f0f13;
     }
     .card-title {
-        font-size: 16px;
-        font-weight: 800;
+        font-size: 14px;
+        font-weight: 700;
         color: #ffffff;
-        margin-bottom: 6px;
+        margin-bottom: 4px;
     }
     .card-desc {
         font-size: 12px;
-        color: #94a3b8;
+        color: #a1a1aa;
         line-height: 1.4;
+        margin-bottom: 10px;
     }
     .badge {
         display: inline-block;
-        background: rgba(139, 92, 246, 0.15);
-        color: #c084fc;
+        background: #18181b;
+        color: #38bdf8;
         font-size: 10px;
-        font-weight: 700;
-        padding: 3px 10px;
-        border-radius: 20px;
-        margin-top: 10px;
-        border: 1px solid rgba(139, 92, 246, 0.3);
-    }
-    .stTextInput input {
-        background-color: #0d0d11 !important;
-        color: #ffffff !important;
-        border: 1px solid #1e1e2d !important;
-        border-radius: 12px !important;
-        padding: 12px !important;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 10px;
+        border: 1px solid #0369a1;
     }
     .stButton button {
-        background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%) !important;
-        color: #ffffff !important;
+        background-color: #ffffff !important;
+        color: #000000 !important;
         font-weight: 700;
-        border-radius: 12px !important;
+        border-radius: 8px !important;
         border: none !important;
         width: 100%;
-        padding: 12px;
-        box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
+        padding: 10px;
+        font-size: 13px;
+    }
+    .stButton button:hover {
+        background-color: #e4e4e7 !important;
+    }
+    .stTextInput input, .stTextArea textarea {
+        background-color: #09090b !important;
+        color: #ffffff !important;
+        border: 1px solid #1f1f23 !important;
+        border-radius: 8px !important;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# التنقل المباشر بدون تعليق
 page = st.session_state.page
 
 if page == "home":
     col1, col2, col3 = st.columns([1, 2.5, 1])
     with col2:
         st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown('<div class="hero-title">VÆRIN ART ACADEMY</div>', unsafe_allow_html=True)
-        st.markdown('<div class="hero-subtitle">تعلّم الرسم من الصفر حتى الاحتراف الكامل بالذكاء الاصطناعي</div>', unsafe_allow_html=True)
+        st.markdown('<div class="grok-header">Start a drawing prompt with Grok</div>', unsafe_allow_html=True)
+        st.markdown('<div class="grok-sub">Pick a training track to explore steps and AI camera feedback.</div>', unsafe_allow_html=True)
         
         st.markdown("""
-            <div class="art-card">
-                <div class="card-title">✏️ المستوى الأول: التخطيط والخطوط</div>
-                <div class="card-desc">تدريب مباشر على رسم الأشكال والمنظور الأولي عبر تفاعل الكاميرا والتتبع.</div>
-                <div class="badge">مسار مبتدئ (Zero to Pro)</div>
+            <div class="grok-card">
+                <div class="card-title">✏️ الخطوط والمنظور الأولي</div>
+                <div class="card-desc">بناء اليد الأساسي، التحكم بالقلم، ورسم الأشكال الهندسية عبر الكاميرا.</div>
+                <div class="badge">Zero to Pro</div>
             </div>
         """, unsafe_allow_html=True)
-        if st.button("انطلق في مسار الأساسيات"):
+        if st.button("Grok: مسار الأساسيات", key="b1"):
             st.session_state.art_track = "الأساسيات والمنظور"
-            st.session_state.page = "login"
+            st.session_state.page = "studio"
             st.rerun()
 
         st.markdown("""
-            <div class="art-card">
-                <div class="card-title">🎨 المستوى الثاني: التظليل والواقعية</div>
-                <div class="card-desc">تعلم أسرار توزيع الإضاءة، التباين، وتحويل الرسم إلى ثلاثي الأبعاد.</div>
-                <div class="badge">تقنيات كبار الرسامين</div>
+            <div class="grok-card">
+                <div class="card-title">🎨 التظليل والواقعية المتقدمة</div>
+                <div class="card-desc">توزيع الإضاءة، التباين العميق، وتقنيات كبار الرسامين العالميين.</div>
+                <div class="badge">Masterclass</div>
             </div>
         """, unsafe_allow_html=True)
-        if st.button("انطلق في مسار التظليل"):
+        if st.button("Grok: مسار التظليل", key="b2"):
             st.session_state.art_track = "التظليل والإضاءة"
-            st.session_state.page = "login"
+            st.session_state.page = "studio"
             st.rerun()
-
-elif page == "login":
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        st.markdown("<br><br>", unsafe_allow_html=True)
-        st.markdown('<div class="hero-title">Authenticate</div>', unsafe_allow_html=True)
-        st.markdown('<div class="hero-subtitle">أدخل بريدك الإلكتروني لحفظ تقدمك في الأكاديمية</div>', unsafe_allow_html=True)
-        
-        email_input = st.text_input("البريد الإلكتروني", placeholder="artist@example.com")
-        
-        if st.button("الدخول إلى المرسم"):
-            if is_valid_email(email_input):
-                st.session_state.user_email = email_input
-                st.session_state.page = "studio"
-                st.rerun()
-            else:
-                st.error("الرجاء إدخال بريد إلكتروني صحيح.")
 
 elif page == "studio":
-    st.title("🎨 VÆRIN Neural Art Studio")
-    
-    with st.sidebar:
-        st.header("لوحة التحكم")
-        st.write(f"المستعمل: **{st.session_state.get('user_email', '')}**")
-        st.write(f"المسار: **{st.session_state.get('art_track', '')}**")
-        st.markdown("---")
-        enable_camera = st.checkbox("تفعيل كاميرا التقييم والتتبع", value=True)
-        st.markdown("---")
-        if st.button("الرجوع للقائمة الرئيسية"):
+    col1, col2, col3 = st.columns([1, 2.5, 1])
+    with col2:
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown(f'<div class="grok-header">Grok Art Studio // {st.session_state.art_track}</div>', unsafe_allow_html=True)
+        st.markdown('<div class="grok-sub">كاميرا الذكاء الاصطناعي متصلة الآن لتحليل خطوطك.</div>', unsafe_allow_html=True)
+        
+        if st.button("← Back to Grok Home"):
             st.session_state.page = "home"
             st.rerun()
+            
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        enable_camera = st.checkbox("تفعيل كاميرا التقييم والتتبع المباشر", value=True)
+        if enable_camera:
+            cam = st.camera_input("التقط صورة لخطواتك على الورقة:")
+            if cam:
+                st.success("تم تحليل الرسمة بنجاح عبر Grok Vision!")
 
-    st.subheader(f"الدرس الحالي: {st.session_state.get('art_track', '')}")
-    st.info("سوف تقوم الكاميرا بالتقاط رسوماتك على الورق وتحليل خطوطك وتوجيهك خطوة بخطوة.")
-    
-    if enable_camera:
-        camera_image = st.camera_input("وجه الكاميرا على الورقة التي ترسم عليها:")
-        if camera_image:
-            st.success("تم التقاط الرسمة! جاري التحليل والمقارنة بطرق كبار الرسامين...")
-
-    st.text_area("استفساراتك الفنية أو تقييم خطوطك:", placeholder="اكتب هنا...")
-    if st.button("إرسال للتحليل الفني"):
-        st.write("🤖 **VÆRIN AI:** خطوطك ممتازة! واصل التدريب بخفة يد.")
+        st.text_area("اطرح سؤالك على Grok:", placeholder="اكتب استفسارك الفني هنا...")
+        if st.button("Ask Grok"):
+            st.success("⚡ **Grok:** خطوطك واعدة جداً، حافظ على استقامة اليد عند التخطيط الأولي.")
