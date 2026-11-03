@@ -1,13 +1,11 @@
 import streamlit as st
 from groq import Groq
-import os
 
 # إعدادات الصفحة
 st.set_page_config(page_title="VAERIN Ultimate Pro", page_icon=None, layout="centered")
 
-# --- مفتاح Groq مدمج تلقائياً في الخلفية ليعمل التطبيق مباشرة بدون طلب المفتاح من الطالب ---
-# ملاحظة: تم وضع مفتاحك الثابت هنا ليعمل النظام فوراً للمستخدمين
-EMBEDDED_GROQ_KEY = "gsk_..."  # ضع مفتاحك الحقيقي هنا بين علامتي التنصيص
+# --- ضع مفتاح Groq الحقيقي هنا بين علامتي التنصيص ليعمل التطبيق عند كل الطلاب مباشرة ---
+MASTER_GROQ_KEY = "gsk_..."  # استبدل هذه النقاط بمفتاحك الحقيقي
 
 # تهيئة حالة جلسة تسجيل الدخول
 if "logged_in" not in st.session_state:
@@ -122,7 +120,7 @@ st.markdown("""
 st.title("VAERIN - Advanced Academic System")
 st.write("System online. Direct access granted. Memory and security active.")
 
-# --- الشريط الجانبي (مبسط وخالٍ من طلب المفتاح) ---
+# --- الشريط الجانبي (خالٍ تماماً من طلب المفتاح) ---
 with st.sidebar:
     st.header("System Controls")
     st.write(f"Connected via: **{st.session_state.get('selected_provider', 'Authorized Session')}**")
@@ -143,10 +141,9 @@ with st.sidebar:
         st.session_state.logged_in = False
         st.rerun()
 
-# معالجة الشات والاتصال المباشر بـ API دون إزعاج الطالب بالمفتاح
+# معالجة الشات والاتصال المباشر بالخلفية دون إزعاج الطالب
 try:
-    # استخدام المفتاح المدمج بالخلفية مباشرة
-    client = Groq(api_key=EMBEDDED_GROQ_KEY)
+    client = Groq(api_key=MASTER_GROQ_KEY)
     
     # تهيئة النظام والذاكرة
     if "messages" not in st.session_state:
@@ -168,7 +165,7 @@ try:
             with st.chat_message(message["role"]):
                 st.write(message["content"])
 
-    # صندوق الادخال والتفاعل المباشر
+    # صندوق الإدخال والتفاعل المباشر
     if user_query := st.chat_input("Type your academic query here..."):
         st.session_state.messages.append({"role": "user", "content": user_query})
         with st.chat_message("user"):
@@ -199,4 +196,4 @@ try:
                 st.write(assistant_answer)
 
 except Exception as e:
-    st.error(f"Please make sure you replace 'gsk_...' with your actual Groq API key inside the code. Technical error: {e}")
+    st.error(f"خطأ في المفتاح المدمج بالسيرفر. يرجى التأكد من وضع مفتاح Groq صحيح في متغير MASTER_GROQ_KEY داخل الكود. التفاصيل: {e}")
