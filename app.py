@@ -2,16 +2,13 @@ import streamlit as st
 from groq import Groq
 import re
 
-# إعدادات الصفحة
 st.set_page_config(page_title="VAERIN Ultimate Pro", page_icon=None, layout="centered")
 
-# تهيئة حالة جلسة تسجيل الدخول الحقيقي
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 if "user_email" not in st.session_state:
     st.session_state.user_email = ""
 
-# وظيفة للتحقق من صحة البريد الإلكتروني الحقيقي
 def is_valid_email(email):
     pattern = r"^[\w\.-]+@[\w\.-]+\.\w+$"
     return re.match(pattern, email) is not None
@@ -56,7 +53,6 @@ if not st.session_state.logged_in:
         st.markdown("<h2 style='text-align: center; color: #f0f6fc; font-weight: 600;'>VÆRIN Academic</h2>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #8b949e; font-size: 13px; margin-bottom: 25px;'>Enter your verified email address to securely access your workspace</p>", unsafe_allow_html=True)
         
-        # حقل إدخال البريد الإلكتروني الحقيقي
         email_input = st.text_input("Email Address", placeholder="name@example.com")
         
         if st.button("Authenticate & Enter"):
@@ -69,7 +65,6 @@ if not st.session_state.logged_in:
                 
     st.stop()
 
-# --- واجهة الدردشة الأساسية عند نجاح المصادقة الحقيقية ---
 st.markdown("""
     <style>
     html, body, [class*="css"] {
@@ -97,7 +92,6 @@ st.markdown("""
 st.title("VAERIN - Advanced Academic System")
 st.write(f"System online. Authenticated user: **{st.session_state.get('user_email', '')}**")
 
-# --- الشريط الجانبي ---
 with st.sidebar:
     st.header("System Controls")
     st.write(f"User: **{st.session_state.get('user_email', '')}**")
@@ -123,7 +117,6 @@ with st.sidebar:
         st.session_state.user_email = ""
         st.rerun()
 
-# معالجة الشات والاتصال المباشر
 if not admin_api_key:
     st.warning("الرجاء التأكد من إدخال مفتاح Groq API في الشريط الجانبي.")
 else:
@@ -142,3 +135,5 @@ else:
                     )
                 }
             ]
+
+        for message in st.session_state.messages
