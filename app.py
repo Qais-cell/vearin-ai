@@ -4,7 +4,7 @@ from groq import Groq
 st.set_page_config(page_title="VÆRIN AI", page_icon="🤖")
 
 st.title("🤖 مساعد VÆRIN الذكي")
-st.write("أهلاً بك! النظام يبحث عن نموذج محادثة متاح ويتصل به تلقائياً.")
+st.write("أهلاً بك! النظام متصل بنماذج المحادثة المباشرة حصراً.")
 
 api_key = st.text_input("أدخل مفتاح Groq API:", type="password")
 
@@ -15,19 +15,19 @@ if api_key:
         user_query = st.text_input("اطرح سؤالك على VÆRIN:")
         if st.button("إرسال"):
             if user_query:
-                with st.spinner("جاري جلب نموذج المحادثة والرد..."):
-                    # جلب قائمة النماذج المتوفرة في مفتاحك
+                with st.spinner("جاري التفكير والرد..."):
                     models_response = client.models.list()
                     all_models = [m.id for m in models_response.data]
                     
-                    # استبعاد نماذج الأمان والصوت وتصفية نماذج الدردشة
-                    valid_models = [
+                    # تصفية قوية جداً لاستبعاد أي موديل صوتي، أمان، أو يتطلب شروط خاصة
+                    chat_models = [
                         m for m in all_models 
-                        if not any(x in m.lower() for x in ['guard', 'whisper', 'vision', 'safeguard', 'embed', 'prompt'])
+                        if any(x in m.lower() for x in ['llama', 'mixtral', 'gemma']) 
+                        and not any(x in m.lower() for x in ['guard', 'whisper', 'vision', 'safeguard', 'orpheus', 'audio', 'prompt'])
                     ]
                     
-                    # استخدام أول نموذج دردشة شغال أو البديل العام
-                    selected_model = valid_models[0] if valid_models else "llama3-8b-8192"
+                    # اختيار أول موديل محادثة متوافق، أو الاعتماد على اسم افتراضي مضمون
+                    selected_model = chat_models[0] if chat_models else "llama3-70b-8192"
                     
                     chat_completion = client.chat.completions.create(
                         messages=[
@@ -40,7 +40,7 @@ if api_key:
                     )
                     
                     answer = chat_completion.choices[0].message.content
-                    st.success(f"الإجابة (عبر نموذج {selected_model}):")
+                    st.success("الإجابة:")
                     st.write(answer)
             else:
                 st.warning("الرجاء كتابة سؤال أولاً.")
