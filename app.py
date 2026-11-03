@@ -1,10 +1,8 @@
 import streamlit as st
 from groq import Groq
 
-# إعدادات الصفحة
 st.set_page_config(page_title="VAERIN Ultimate Pro", page_icon=None, layout="centered")
 
-# تهيئة حالة جلسة تسجيل الدخول
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 if "selected_provider" not in st.session_state:
@@ -37,7 +35,6 @@ if not st.session_state.logged_in:
         </style>
     """, unsafe_allow_html=True)
 
-    # توسيط واجهة تسجيل الدخول بشكل نظيف
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         st.markdown("<br><br>", unsafe_allow_html=True)
@@ -61,7 +58,6 @@ if not st.session_state.logged_in:
             
     st.stop()
 
-# --- واجهة الدردشة الأساسية عند نجاح الدخول ---
 st.markdown("""
     <style>
     html, body, [class*="css"] {
@@ -89,7 +85,6 @@ st.markdown("""
 st.title("VAERIN - Advanced Academic System")
 st.write("System online. Direct access granted. Memory and security active.")
 
-# --- الشريط الجانبي ---
 with st.sidebar:
     st.header("System Controls")
     st.write(f"Connected via: **{st.session_state.get('selected_provider', 'Authorized Session')}**")
@@ -111,4 +106,50 @@ with st.sidebar:
         st.rerun()
         
     if st.button("Sign out"):
-        st.session_state.logged_in =
+        st.session_state.logged_in = False
+        st.rerun()
+
+if not admin_api_key:
+    st.warning("الرجاء التأكد من إدخال مفتاح Groq API في الشريط الجانبي.")
+else:
+    try:
+        client = Groq(api_key=admin_api_key)
+        
+        if "messages" not in st.session_state:
+            st.session_state.messages = [
+                {
+                    "role": "system", 
+                    "content": (
+                        "You are VAERIN, an advanced academic AI tutor. "
+                        "You possess a robust long-term memory connecting all conversation details accurately. "
+                        "Strict rule: Never perform quizzes or assessment tests unless explicitly requested by the user. "
+                        "Maintain a direct, scholarly tone without emojis or diplomatic filler phrases."
+                    )
+                }
+            ]
+
+        for message in st.session_state.messages:
+            if message["role"] != "system":
+                with st.chat_message(message["role"]):
+                    st.write(message["content"])
+
+        if user_query := st.chat_input("Type your academic query here..."):
+            st.session_state.messages.append({"role": "user", "content": user_query})
+            with st.chat_message("user"):
+                st.write(user_query)
+
+            with st.spinner("Analyzing and retrieving context..."):
+                chat_completion = client.chat.completions.create(
+                    messages=st.session_state.messages,
+                    model="llama3-70b-8192",
+                    temperature=temperature,
+                    max_tokens=max_tokens_val,
+                )
+                
+                assistant_answer = chat_completion.choices[0].message.content
+                st.session_state.messages.append({"role": "assistant", "content": assistant_answer})
+                with st.chat_message("assistant"):
+                    st.write(assistant_answer)
+
+    except Exception as e:
+        st.error(f"خطأ في الاتصال أو مفتاح API غير صالح. التفاصيل: {e}")
