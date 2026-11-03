@@ -16,7 +16,7 @@ if api_key:
         if st.button("إرسال"):
             if user_query:
                 with st.spinner("جاري التوليد بسرعة فائقة..."):
-                    # استخدام نموذج متوفر ومضمون 100% على Groq
+                    # استخدام النموذج القياسي المعتمد والنشط على Groq
                     chat_completion = client.chat.completions.create(
                         messages=[
                             {
@@ -24,7 +24,7 @@ if api_key:
                                 "content": user_query,
                             }
                         ],
-                        model="llama-3.1-8b-instant",
+                        model="llama-3-8b-8192",
                     )
                     
                     answer = chat_completion.choices[0].message.content
