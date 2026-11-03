@@ -1,10 +1,10 @@
 import streamlit as st
 from groq import Groq
 
-st.set_page_config(page_title="VÆRIN Study AI", page_icon="📚")
+st.set_page_config(page_title="VÆRIN Study AI", page_icon="🎓")
 
-st.title("📚 VÆRIN - مساعدك الدراسي الأكاديمي")
-st.write("أهلاً بك! الإصدار المطور للشرح الذكي والعميق.")
+st.title("🎓 VÆRIN - معلمك الأكاديمي الخارق")
+st.write("أهلاً بك! الإصدار المطور ليتفوق على التدريس الخصوصي التقليدي بالسرعة، العمق، والدقة.")
 
 api_key = st.text_input("أدخل مفتاح Groq API:", type="password")
 
@@ -12,14 +12,13 @@ if api_key:
     try:
         client = Groq(api_key=api_key)
         
-        user_query = st.text_area("اطرح سؤالك الدراسي، المسألة، أو الموضوع:")
-        if st.button("شرح بالتفصيل"):
+        user_query = st.text_area("اطرح سؤالك أو المادة التي تريد أن أشرحها لك بتفوق:")
+        if st.button("بدء الشرح المتقدم"):
             if user_query:
-                with st.spinner("جاري التحليل والشرح..."):
+                with st.spinner("جاري إعداد الشرح الخارق..."):
                     models_response = client.models.list()
                     all_models = [m.id for m in models_response.data]
                     
-                    # استبعاد نماذج علام ونماذج الأمان والتركيز على النماذج القوية
                     active_models = [
                         m for m in all_models 
                         if not any(x in m.lower() for x in ['guard', 'whisper', 'vision', 'safeguard', 'orpheus', 'audio', 'prompt', 'embedding', 'allam'])
@@ -27,11 +26,12 @@ if api_key:
                     
                     selected_model = active_models[0] if active_models else all_models[0]
                     
-                    # تعليمات قوية وصارمة تمنع الردود الدبلوماسية الفارغة وتفرضه يكون أستاذ حقيقي
+                    # نظام تعليمي يجعله يتفوق على المعلم الخصوصي (شرح عميق، أمثلة، واختبارات فورية)
                     system_instructions = (
-                        "أنت VÆRIN، أستاذ خصوصي رقمي ذكي، فائق الذكاء، ومختص أكاديمياً. "
-                        "ممنوع منعاً باتاً استخدام الردود الدبلوماسية الفارغة أو المقدمات الطويلة (مثل: 'كمساعد ذكاء اصطناعي لا أمتلك تفضيلات...'). "
-                        "ادخل في صلب الموضوع فوراً. قدم إجابات دقيقة، أمثلة واقعية، خطوات واضحة، وتبسيطاً كاملاً للمادة العلمية باللغة العربية الفصحى."
+                        "أنت VÆRIN، المعلم الأكاديمي الخارق الذي يتفوق على أي مدرس خصوصي بشري. "
+                        "مهمتك ليس فقط الإجابة، بل تقديم شرح عميق ومبسط جداً، مع ضرب أمثلة من الواقع، "
+                        "وتقديم 'تمرين سريع' أو سؤال اختباري في نهاية إجابتك لتتأكد أن الطالب فهم المادة تماماً. "
+                        "ممنوع الردود الدبلوماسية الفارغة. كن ذكياً، مباشراً، ومبدعاً بالشرح باللغة العربية الفصحى."
                     )
                     
                     chat_completion = client.chat.completions.create(
@@ -44,7 +44,7 @@ if api_key:
                     )
                     
                     answer = chat_completion.choices[0].message.content
-                    st.success(f"الشرح الأكاديمي (عبر نموذج {selected_model}):")
+                    st.success(f"شرح المعلم الخارق (عبر نموذج {selected_model}):")
                     st.write(answer)
             else:
                 st.warning("الرجاء كتابة السؤال أو المادة أولاً.")
