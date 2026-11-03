@@ -11,7 +11,6 @@ if "selected_provider" not in st.session_state:
     st.session_state.selected_provider = ""
 
 if not st.session_state.logged_in:
-    # تنسيقات واجهة تسجيل الدخول المتكاملة بالكامل
     st.markdown("""
         <style>
         .stApp {
@@ -23,7 +22,7 @@ if not st.session_state.logged_in:
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 80vh;
+            height: 75vh;
         }
         .login-card {
             background: #161b22;
@@ -56,3 +55,16 @@ if not st.session_state.logged_in:
             width: 100%;
             margin-bottom: 12px;
             padding: 12px;
+            font-size: 14px;
+        }
+        .stButton button:hover {
+            background-color: #30363d !important;
+            border-color: #8b949e !important;
+            color: #ffffff !important;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+    st.markdown('<div class="login-container"><div class="login-card">', unsafe_allow_html=True)
+    st.markdown('<div class="login-logo">VÆRIN Academic</div>', unsafe_allow_html=True)
+    st.markdown('<div class="login-subtitle">Sign in to
