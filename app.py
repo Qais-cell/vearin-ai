@@ -15,89 +15,122 @@ def is_valid_email(email):
     pattern = r"^[\w\.-]+@[\w\.-]+\.\w+$"
     return re.match(pattern, email) is not None
 
-# --- مرحلة الأنترو الترحيبي الحركي ---
+# --- أنترو ترحيبي فخم وحركي (بنمط Gemini/Groq الرهيب) ---
 if st.session_state.show_intro and not st.session_state.logged_in:
     st.markdown("""
         <style>
+        @keyframes glowPulse {
+            0% { opacity: 0.3; transform: scale(0.98); filter: drop-shadow(0 0 2px rgba(88,166,255,0.2)); }
+            50% { opacity: 1; transform: scale(1.02); filter: drop-shadow(0 0 25px rgba(88,166,255,0.6)); }
+            100% { opacity: 0.3; transform: scale(0.98); filter: drop-shadow(0 0 2px rgba(88,166,255,0.2)); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
         .stApp {
-            background: #0d1117;
+            background: radial-gradient(circle at center, #161b22 0%, #0d1117 100%);
             color: #c9d1d9;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
-        .intro-box {
+        .intro-container {
             text-align: center;
-            padding: 90px 20px;
+            padding: 110px 20px;
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .intro-title {
-            font-size: 34px;
-            font-weight: 700;
-            color: #f0f6fc;
-            margin-bottom: 10px;
+        .intro-logo {
+            font-size: 42px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #f0f6fc 0%, #58a6ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+            animation: glowPulse 3s infinite ease-in-out;
+            letter-spacing: -1.5px;
         }
-        .intro-sub {
-            font-size: 14px;
+        .intro-desc {
+            font-size: 15px;
             color: #8b949e;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
+            font-weight: 400;
+            letter-spacing: 0.5px;
         }
         .stButton button {
-            background-color: #238636 !important;
+            background: linear-gradient(135deg, #238636 0%, #2ea043 100%) !important;
             color: #ffffff !important;
             font-weight: 600;
-            border-radius: 8px !important;
-            border: none !important;
-            padding: 12px 30px;
-            font-size: 15px;
+            border-radius: 12px !important;
+            border: 1px solid rgba(255,255,255,0.1) !important;
+            padding: 14px 35px;
+            font-size: 16px;
             width: 100%;
+            box-shadow: 0 8px 24px rgba(35, 134, 54, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .stButton button:hover {
-            background-color: #2ea043 !important;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(46, 160, 67, 0.6);
+            filter: brightness(1.1);
         }
         </style>
     """, unsafe_allow_html=True)
 
     st.markdown("""
-        <div class="intro-box">
-            <div class="intro-title">VÆRIN Intelligence System</div>
-            <div class="intro-sub">Next-Generation Autonomous Academic Environment</div>
+        <div class="intro-container">
+            <div class="intro-logo">VÆRIN AI</div>
+            <div class="intro-desc">Autonomous Academic Intelligence & Advanced Neural Workspace</div>
         </div>
     """, unsafe_allow_html=True)
 
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        if st.button("Initialize System"):
+        if st.button("Initialize Neural Core"):
             st.session_state.show_intro = False
             st.rerun()
     st.stop()
 
-# --- مرحلة تسجيل الدخول ---
+# --- مرحلة تسجيل الدخول الحقيقي ---
 if not st.session_state.logged_in:
     st.markdown("""
         <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
         .stApp {
             background: #0d1117;
             color: #c9d1d9;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            animation: fadeIn 0.5s ease-out;
         }
         .stTextInput input {
             background-color: #161b22 !important;
             color: #c9d1d9 !important;
             border: 1px solid #30363d !important;
-            border-radius: 8px !important;
-            padding: 12px !important;
+            border-radius: 10px !important;
+            padding: 14px !important;
+            transition: all 0.3s ease;
+        }
+        .stTextInput input:focus {
+            border-color: #58a6ff !important;
+            box-shadow: 0 0 0 4px rgba(88, 166, 255, 0.15);
         }
         .stButton button {
             background-color: #21262d !important;
             color: #c9d1d9 !important;
-            font-weight: 500;
-            border-radius: 8px !important;
+            font-weight: 600;
+            border-radius: 10px !important;
             border: 1px solid rgba(240, 246, 252, 0.15) !important;
             width: 100%;
-            margin-top: 10px;
-            padding: 12px;
+            margin-top: 12px;
+            padding: 14px;
+            transition: all 0.25s ease;
         }
         .stButton button:hover {
             background-color: #30363d !important;
             color: #ffffff !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
         }
         </style>
     """, unsafe_allow_html=True)
@@ -105,7 +138,7 @@ if not st.session_state.logged_in:
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         st.markdown("<br><br>", unsafe_allow_html=True)
-        st.markdown("<h2 style='text-align: center; color: #f0f6fc; font-weight: 600;'>Secure Authentication</h2>", unsafe_allow_html=True)
+        st.markdown("<h2 style='text-align: center; color: #f0f6fc; font-weight: 700;'>Secure Authentication</h2>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #8b949e; font-size: 13px; margin-bottom: 25px;'>Enter your verified email address to establish session</p>", unsafe_allow_html=True)
         
         email_input = st.text_input("Email Address", placeholder="name@example.com")
@@ -123,6 +156,10 @@ if not st.session_state.logged_in:
 # --- واجهة الدردشة والإعدادات المتقدمة ---
 st.markdown("""
     <style>
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
     .main {
         background-color: #0d1117;
         color: #c9d1d9;
@@ -130,9 +167,15 @@ st.markdown("""
     .stChatMessage {
         background: #161b22;
         border: 1px solid #30363d;
-        border-radius: 10px;
-        padding: 16px;
-        margin-bottom: 14px;
+        border-radius: 12px;
+        padding: 18px;
+        margin-bottom: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: border-color 0.2s ease;
+    }
+    .stChatMessage:hover {
+        border-color: #484f58;
     }
     h1, h2, h3 {
         color: #f0f6fc;
