@@ -4,10 +4,9 @@ import re
 
 st.set_page_config(page_title="VAERIN Ultimate Pro", page_icon=None, layout="centered")
 
-if "step" not in st.session_state:
-    st.session_state.step = "setup"
-if "logged_in" not in st.session_state:
-    st.session_state.logged_in = False
+# فرض تهيئة الحالة من الصفر لمنع أي تعليق
+if "app_state" not in st.session_state:
+    st.session_state.app_state = "setup"
 if "user_email" not in st.session_state:
     st.session_state.user_email = ""
 if "study_goal" not in st.session_state:
@@ -17,7 +16,7 @@ def is_valid_email(email):
     pattern = r"^[\w\.-]+@[\w\.-]+\.\w+$"
     return re.match(pattern, email) is not None
 
-# تنسيق عام لضمان عدم حدوث أي شاشة بيضاء
+# التصميم العام الفخم والداكن
 st.markdown("""
     <style>
     .stApp {
@@ -45,14 +44,14 @@ st.markdown("""
     .stButton button:hover {
         background-color: #2ea043 !important;
     }
-    .title-box {
+    .main-title {
         text-align: center;
         font-size: 26px;
         font-weight: 700;
         color: #f0f6fc;
         margin-bottom: 5px;
     }
-    .sub-box {
+    .sub-title {
         text-align: center;
         font-size: 13px;
         color: #8b949e;
@@ -72,13 +71,13 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- الخطوة 1: إعداد الأهداف الدراسية ---
-if st.session_state.step == "setup":
+# 1. واجهة إعداد الأهداف الدراسية
+if st.session_state.app_state == "setup":
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown('<div class="title-box">VÆRIN AI Workspace</div>', unsafe_allow_html=True)
-        st.markdown('<div class="sub-box">Configure your autonomous academic environment</div>', unsafe_allow_html=True)
+        st.markdown('<div class="main-title">VÆRIN AI Workspace</div>', unsafe_allow_html=True)
+        st.markdown('<div class="sub-title">Configure your autonomous academic environment</div>', unsafe_allow_html=True)
         
         goal_selection = st.selectbox(
             "Primary Academic Objective:",
@@ -98,28 +97,88 @@ if st.session_state.step == "setup":
         if st.button("Continue to Authentication"):
             st.session_state.study_goal = goal_selection
             st.session_state.academic_style = academic_style
-            st.session_state.step = "login"
+            st.session_state.app_state = "login"
             st.rerun()
 
-# --- الخطوة 2: تسجيل الدخول ---
-elif st.session_state.step == "login":
+# 2. واجهة تسجيل الدخول
+elif st.session_state.app_state == "login":
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         st.markdown("<br><br>", unsafe_allow_html=True)
-        st.markdown('<div class="title-box">Secure Authentication</div>', unsafe_allow_html=True)
-        st.markdown('<div class="sub-box">Enter your verified email address to establish session</div>', unsafe_allow_html=True)
+        st.markdown('<div class="main-title">Secure Authentication</div>', unsafe_allow_html=True)
+        st.markdown('<div class="sub-title">Enter your verified email address to establish session</div>', unsafe_allow_html=True)
         
         email_input = st.text_input("Email Address", placeholder="name@example.com")
         
         if st.button("Authenticate & Enter"):
             if is_valid_email(email_input):
-                st.session_state.logged_in = True
                 st.session_state.user_email = email_input
-                st.session_state.step = "chat"
+                st.session_state.app_state = "chat"
                 st.rerun()
             else:
                 st.error("الرجاء إدخال بريد إلكتروني حقيقي وصحيح (يحتوي على @ والنطاق).")
 
-# --- الخطوة 3: واجهة الدردشة الأساسية ---
-elif st.session_state.step == "chat":
-    st
+# 3. واجهة الدردشة والتحكم
+elif st.session_state.app_state == "chat":
+    st.title("VAERIN - Advanced Academic System")
+
+    with st.sidebar:
+        st.header("Control Panel")
+        st.write(f"Session: **{st.session_state.get('user_email', '')}**")
+        st.write(f"Objective: **{st.session_state.get('study_goal', 'عام')}**")
+        
+        st.markdown("---")
+        st.subheader("API Configuration")
+        admin_api_key = st.text_input("Groq API Key:", type="password", value="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")
+        
+        st.markdown("---")
+        st.subheader("Advanced Engine Settings")
+        temperature = st.slider("Temperature (Creativity):", 0.0, 1.0, 0.7, 0.1)
+        max_tokens_val = st.slider("Max Response Tokens:", 256, 4096, 1536, 128)
+        
+        st.markdown("---")
+        st.subheader("System Behavior")
+        scholarly_mode = st.checkbox("Strict Scholarly Tone", value=True)
+        memory_persistence = st.checkbox("Active Memory Context", value=True)
+        
+        st.markdown("---")
+        col_a, col_b = st.columns(2)
+        with col_a:
+            if st.button("Reset Memory"):
+                if "messages" in st.session_state:
+                    del st.session_state.messages
+                st.success("Cleared.")
+                st.rerun()
+        with col_b:
+            if st.button("Sign Out"):
+                st.session_state.app_state = "setup"
+                st.rerun()
+
+    if not admin_api_key:
+        st.warning("الرجاء التأكد من إدخال مفتاح Groq API في الشريط الجانبي.")
+    else:
+        try:
+            client = Groq(api_key=admin_api_key)
+            
+            current_goal = st.session_state.get("study_goal", "بحث علمي متقدم")
+            tone_instruction = (
+                f"Maintain a strict, scholarly, direct tone tailored to the user's objective: '{current_goal}'. Never use emojis or diplomatic filler phrases."
+                if scholarly_mode else f"Maintain a professional academic style focused on: '{current_goal}'."
+            )
+            
+            if "messages" not in st.session_state:
+                st.session_state.messages = [
+                    {
+                        "role": "system", 
+                        "content": (
+                            "You are VAERIN, an advanced academic AI tutor with deep analytical capabilities. "
+                            "You possess robust long-term memory connecting all conversation details accurately. "
+                            "Strict rule: Never perform quizzes or assessment tests unless explicitly requested by the user. "
+                            f"{tone_instruction}"
+                        )
+                    }
+                ]
+
+            for message in st.session_state.messages:
+                if message["role"] != "system":
+                    with
