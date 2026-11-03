@@ -89,8 +89,8 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# العنوان الرئيسي النظيف بدون إظهار الإيميل في الوجه
 st.title("VAERIN - Advanced Academic System")
-st.write(f"System online. Authenticated user: **{st.session_state.get('user_email', '')}**")
 
 with st.sidebar:
     st.header("System Controls")
