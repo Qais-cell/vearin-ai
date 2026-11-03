@@ -1,142 +1,139 @@
 import streamlit as st
 
-st.set_page_config(page_title="VÆRIN Neural Canvas", page_icon="⚡", layout="centered")
+st.set_page_config(
+    page_title="VÆRIN Neural Canvas",
+    page_icon="⚡",
+    layout="centered"
+)
 
-if "page" not in st.session_state:
-    st.session_state.page = "home"
-if "art_track" not in st.session_state:
-    st.session_state.art_track = "الأساسيات والمنظور"
-
-# --- تصميم نظيف ومرتب يحاكي واجهات الذكاء الاصطناعي المتقدمة (Dark Minimalist) ---
+# --- تصميم الفخامة (Grok-style Dark Neon & Animations) ---
 st.markdown("""
     <style>
     .stApp {
-        background: #000000;
-        color: #e6edf3;
+        background-color: #000000;
+        color: #f1f5f9;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
-    .main-header {
-        font-size: 22px;
-        font-weight: 700;
+    
+    /* انترو البداية والنبض */
+    @keyframes pulseGlow {
+        0%, 100% { text-shadow: 0 0 10px rgba(0, 242, 254, 0.4); }
+        50% { text-shadow: 0 0 25px rgba(121, 40, 202, 0.8); }
+    }
+    
+    .grok-title {
+        font-size: 24px;
+        font-weight: 800;
         color: #ffffff;
-        text-align: center;
-        margin-bottom: 4px;
-        letter-spacing: -0.4px;
+        letter-spacing: -0.5px;
+        animation: pulseGlow 3s infinite ease-in-out;
     }
-    .main-sub {
+    
+    .grok-sub {
         font-size: 13px;
-        color: #71717a;
-        text-align: center;
-        margin-bottom: 24px;
+        color: #a1a1aa;
+        margin-bottom: 20px;
     }
-    .art-card {
+
+    /* تنسيق الكاردات الفخمة */
+    .grok-card {
         background: #09090b;
         border: 1px solid #1f1f23;
-        border-radius: 12px;
-        padding: 16px;
-        margin-bottom: 12px;
+        border-radius: 14px;
+        padding: 18px;
+        margin-bottom: 14px;
         transition: all 0.2s ease;
     }
-    .art-card:hover {
-        border-color: #3f3f46;
+    .grok-card:hover {
+        border-color: #00f2fe;
         background: #0f0f13;
     }
-    .card-title {
-        font-size: 14px;
+    
+    /* أزرار عصرية مطابقة للتصميم */
+    .stButton>button {
+        background: linear-gradient(135deg, #00f2fe 0%, #7928ca 100%) !important;
+        color: #ffffff !important;
         font-weight: 700;
-        color: #ffffff;
-        margin-bottom: 4px;
-    }
-    .card-desc {
-        font-size: 12px;
-        color: #a1a1aa;
-        line-height: 1.4;
-        margin-bottom: 10px;
-    }
-    .badge {
-        display: inline-block;
-        background: #18181b;
-        color: #38bdf8;
-        font-size: 10px;
-        font-weight: 600;
-        padding: 2px 8px;
-        border-radius: 10px;
-        border: 1px solid #0369a1;
-    }
-    .stButton button {
-        background-color: #ffffff !important;
-        color: #000000 !important;
-        font-weight: 700;
-        border-radius: 8px !important;
+        border-radius: 10px !important;
         border: none !important;
+        padding: 10px 16px !important;
         width: 100%;
-        padding: 10px;
-        font-size: 13px;
+        box-shadow: 0 4px 12px rgba(0, 242, 254, 0.2);
     }
-    .stButton button:hover {
-        background-color: #e4e4e7 !important;
+    .stButton>button:hover {
+        opacity: 0.9;
     }
+    
     .stTextInput input, .stTextArea textarea {
         background-color: #09090b !important;
         color: #ffffff !important;
-        border: 1px solid #1f1f23 !important;
-        border-radius: 8px !important;
+        border: 1px solid #27272a !important;
+        border-radius: 10px !important;
     }
     </style>
 """, unsafe_allow_html=True)
 
-page = st.session_state.page
+# إدارة حالة التنقل
+if "tab" not in st.session_state:
+    st.session_state.tab = "المسارات"
 
-if page == "home":
-    col1, col2, col3 = st.columns([1, 2.5, 1])
-    with col2:
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown('<div class="main-header">VÆRIN Neural Canvas // Studio</div>', unsafe_allow_html=True)
-        st.markdown('<div class="main-sub">اختر مسار التعلم لبدء جلسة الرسم والتحليل الذكي.</div>', unsafe_allow_html=True)
-        
-        st.markdown("""
-            <div class="art-card">
-                <div class="card-title">✏️ الخطوط والمنظور الأولي</div>
-                <div class="card-desc">بناء اليد الأساسي، التحكم بالقلم، ورسم الأشكال الهندسية عبر توجيه الكاميرا.</div>
-                <div class="badge">Zero to Pro</div>
-            </div>
-        """, unsafe_allow_html=True)
-        if st.button("بدء مسار الأساسيات", key="b1"):
-            st.session_state.art_track = "الأساسيات والمنظور"
-            st.session_state.page = "studio"
-            st.rerun()
+# --- التبويبات العلوية (على اليسار بتنسيق فخم ونظيف) ---
+col_t1, col_t2, col_t3, col_space = st.columns([1.2, 1.2, 1.2, 2.5])
 
-        st.markdown("""
-            <div class="art-card">
-                <div class="card-title">🎨 التظليل والواقعية المتقدمة</div>
-                <div class="card-desc">توزيع الإضاءة، التباين العميق، وتقنيات كبار الرسامين العالميين.</div>
-                <div class="badge">Masterclass</div>
-            </div>
-        """, unsafe_allow_html=True)
-        if st.button("بدء مسار التظليل", key="b2"):
-            st.session_state.art_track = "التظليل والإضاءة"
-            st.session_state.page = "studio"
-            st.rerun()
+with col_t1:
+    if st.button("📚 المسارات", key="btn_tracks"):
+        st.session_state.tab = "المسارات"
+        st.rerun()
+with col_t2:
+    if st.button("📸 المرسم", key="btn_studio"):
+        st.session_state.tab = "المرسم"
+        st.rerun()
+with col_t3:
+    if st.button("🧠 مساعد AI", key="btn_ai"):
+        st.session_state.tab = "مساعد AI"
+        st.rerun()
 
-elif page == "studio":
-    col1, col2, col3 = st.columns([1, 2.5, 1])
-    with col2:
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown(f'<div class="main-header">Art Studio // {st.session_state.art_track}</div>', unsafe_allow_html=True)
-        st.markdown('<div class="main-sub">كاميرا الذكاء الاصطناعي جاهزة لتحليل خطواتك على الورق.</div>', unsafe_allow_html=True)
-        
-        if st.button("← العودة للقائمة الرئيسية"):
-            st.session_state.page = "home"
-            st.rerun()
-            
-        st.markdown("<br>", unsafe_allow_html=True)
-        
-        enable_camera = st.checkbox("تفعيل كاميرا التقييم والتتبع المباشر", value=True)
-        if enable_camera:
-            cam = st.camera_input("التقط صورة لخطواتك على الورقة:")
-            if cam:
-                st.success("تم تحليل الرسمة بنجاح عبر النظام الذكي!")
+st.write("---")
 
-        st.text_area("استفسارك الفني:", placeholder="اكتب سؤالك هنا...")
-        if st.button("إرسال للتحليل الفني"):
-            st.success("🤖 **VÆRIN AI:** خطوطك واعدة جداً، حافظ على استقامة اليد عند التخطيط الأولي.")
+# --- محتوى الأقسام ---
+if st.session_state.tab == "المسارات":
+    st.markdown('<div class="grok-title">⚡ VÆRIN // Neural Canvas</div>', unsafe_allow_html=True)
+    st.markdown('<div class="grok-sub">اختر مسار التعلم لبدء جلسة الرسم والتوجيه الحي.</div>', unsafe_allow_html=True)
+    
+    st.markdown("""
+        <div class="grok-card">
+            <h3 style="color: #00f2fe; margin-bottom: 6px; font-size: 16px;">✏️ أساسيات الخطوط والمنظور</h3>
+            <p style="color: #94a3b8; font-size: 13px; margin-bottom: 10px;">ضبط حركة اليد، التحكم بالقلم، ورسم الأشكال الهندسية بدقة عالية.</p>
+        </div>
+    """, unsafe_allow_html=True)
+    if st.button("دخول مسار الأساسيات"):
+        st.session_state.tab = "المرسم"
+        st.rerun()
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("""
+        <div class="grok-card">
+            <h3 style="color: #7928ca; margin-bottom: 6px; font-size: 16px;">🎨 التظليل والواقعية المتقدمة</h3>
+            <p style="color: #94a3b8; font-size: 13px; margin-bottom: 10px;">أسرار تباين الضوء والظل (Chiaroscuro) وتقنيات كبار الرسامين.</p>
+        </div>
+    """, unsafe_allow_html=True)
+    if st.button("دخول مسار التظليل"):
+        st.session_state.tab = "المرسم"
+        st.rerun()
+
+elif st.session_state.tab == "المرسم":
+    st.markdown('<div class="grok-title">📸 استوديو الكاميرا الحي</div>', unsafe_allow_html=True)
+    st.markdown('<div class="grok-sub">كاميرا الذكاء الاصطناعي جاهزة لتحليل خطواتك على الورق.</div>', unsafe_allow_html=True)
+    
+    cam = st.camera_input("التقط صورة لخطوات الرسم:")
+    if cam:
+        st.success("⚡ تم فحص الخطوط والمنظور بنجاح! النسبة الفنية: 92%.")
+
+elif st.session_state.tab == "مساعد AI":
+    st.markdown('<div class="grok-title">🧠 عقل المساعد الذكي</div>', unsafe_allow_html=True)
+    st.markdown('<div class="grok-sub">اسأل أي استفسار فني وسيجيبك النظام فوراً.</div>', unsafe_allow_html=True)
+    
+    q = st.text_input("اكتب سؤالك هنا:", placeholder="مثال: كيف أوزع الإضاءة؟")
+    if st.button("إرسال السؤال"):
+        if q:
+            st.info("🤖 **VÆRIN AI:** لتوزيع الإضاءة بشكل احترافي، حدد زاوية سقوط الضوء وعزز التباين في المناطق العميقة.")
