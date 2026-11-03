@@ -22,55 +22,55 @@ def is_valid_email(email):
 
 # --- 1. مرحلة الأنترو التحريكي المطول والأسطوري ---
 if st.session_state.show_intro and not st.session_state.logged_in:
-    intro_html = """
-        <style>
-        @keyframes introFlow {
-            0% { opacity: 0; transform: scale(0.92); filter: blur(8px); }
-            40% { opacity: 1; transform: scale(1); filter: blur(0px); }
-            75% { opacity: 1; transform: scale(1.02); filter: blur(0px); }
-            100% { opacity: 0; transform: scale(1.08); filter: blur(10px); }
-        }
-        .stApp {
-            background: radial-gradient(circle at center, #161b22 0%, #0d1117 100%);
-            color: #c9d1d9;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
-        .auto-intro {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: #0d1117;
-            z-index: 99999;
-            animation: introFlow 3.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-        .intro-logo {
-            font-size: 50px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #f0f6fc 0%, #58a6ff 50%, #1f6feb 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 12px;
-            letter-spacing: -2px;
-        }
-        .intro-desc {
-            font-size: 15px;
-            color: #8b949e;
-            font-weight: 400;
-            letter-spacing: 1px;
-        }
-        </style>
-        <div class="auto-intro">
-            <div class="intro-logo">VÆRIN AI</div>
-            <div class="intro-desc">Autonomous Academic Intelligence & Research Workspace</div>
-        </div>
+    intro_css = """
+    <style>
+    @keyframes introFlow {
+        0% { opacity: 0; transform: scale(0.92); filter: blur(8px); }
+        40% { opacity: 1; transform: scale(1); filter: blur(0px); }
+        75% { opacity: 1; transform: scale(1.02); filter: blur(0px); }
+        100% { opacity: 0; transform: scale(1.08); filter: blur(10px); }
+    }
+    .stApp {
+        background: radial-gradient(circle at center, #161b22 0%, #0d1117 100%);
+        color: #c9d1d9;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .auto-intro {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background: #0d1117;
+        z-index: 99999;
+        animation: introFlow 3.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .intro-logo {
+        font-size: 50px;
+        font-weight: 800;
+        background: linear-gradient(135deg, #f0f6fc 0%, #58a6ff 50%, #1f6feb 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 12px;
+        letter-spacing: -2px;
+    }
+    .intro-desc {
+        font-size: 15px;
+        color: #8b949e;
+        font-weight: 400;
+        letter-spacing: 1px;
+    }
+    </style>
+    <div class="auto-intro">
+        <div class="intro-logo">VÆRIN AI</div>
+        <div class="intro-desc">Autonomous Academic Intelligence & Research Workspace</div>
+    </div>
     """
-    st.markdown(intro_html, unsafe_allow_html=True)
+    st.markdown(intro_css, unsafe_allow_html=True)
     
     time.sleep(3.6)
     st.session_state.show_intro = False
@@ -79,8 +79,24 @@ if st.session_state.show_intro and not st.session_state.logged_in:
 
 # --- 2. مرحلة تخصيص الأهداف الدراسية وأسلوب التطبيق ---
 if st.session_state.show_setup and not st.session_state.logged_in:
-    st.markdown("""
-        <style>
-        .stApp {
-            background: #0d1117;
-            color:
+    setup_css = """
+    <style>
+    .stApp {
+        background: #0d1117;
+        color: #c9d1d9;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .setup-title {
+        text-align: center;
+        font-size: 24px;
+        font-weight: 700;
+        color: #f0f6fc;
+        margin-bottom: 5px;
+    }
+    .setup-sub {
+        text-align: center;
+        font-size: 13px;
+        color: #8b949e;
+        margin-bottom: 20px;
+    }
+    .st
