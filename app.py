@@ -1,41 +1,40 @@
 import streamlit as st
-import google.generativeai as genai
-import time
+from groq import Groq
 
 st.set_page_config(page_title="VÆRIN AI", page_icon="🤖")
 
-st.title("🤖 مساعد VÆRIN الذكي")
-st.write("أهلاً بك! أدخل مفتاح Google Gemini API الخاص بك للبدء.")
+st.title("🤖 مساعد VÆRIN الذكي (عبر Groq)")
+st.write("أهلاً بك! يعمل هذا الإصدار بسرعة خارقة وبدون قيود غوغل.")
 
-api_key = st.text_input("مفتاح API:", type="password")
+# حقل إدخال مفتاح Groq API المجاني
+api_key = st.text_input("أدخل مفتاح Groq API:", type="password")
 
 if api_key:
     try:
-        genai.configure(api_key=api_key)
-        # العودة للموديل المطلوب رسمياً من غوغل
-        model = genai.GenerativeModel("gemini-3.8-flash")
+        # ربط العميل مع سيرفرات Groq
+        client = Groq(api_key=api_key)
         
         user_query = st.text_input("اطرح سؤالك على VÆRIN:")
         if st.button("إرسال"):
             if user_query:
-                with st.spinner("جاري المعالجة..."):
-                    try:
-                        response = model.generate_content(user_query)
-                        st.success("الإجابة:")
-                        st.write(response.text)
-                    except Exception as api_err:
-                        # إذا صار ضغط أو تجاوز للحد، الكود ينتظر ويعيد المحاولة تلقائياً
-                        if "429" in str(api_err) or "quota" in str(api_err).lower():
-                            st.warning("⚠️ تم الوصول للحد المؤقت، جاري إعادة المحاولة تلقائياً بعد ثوانٍ...")
-                            time.sleep(15)
-                            response = model.generate_content(user_query)
-                            st.success("الإجابة:")
-                            st.write(response.text)
-                        else:
-                            st.error(f"خطأ في الرد: {api_err}")
+                with st.spinner("جاري التوليد بسرعة فائقة..."):
+                    # استخدام أقوى النماذج المجانية المتاحة لدى Groq
+                    chat_completion = client.chat.completions.create(
+                        messages=[
+                            {
+                                "role": "user",
+                                "content": user_query,
+                            }
+                        ],
+                        model="llama-3.3-70b-versatile",
+                    )
+                    
+                    answer = chat_completion.choices[0].message.content
+                    st.success("الإجابة:")
+                    st.write(answer)
             else:
                 st.warning("الرجاء كتابة سؤال أولاً.")
     except Exception as e:
         st.error(f"حدث خطأ في الاتصال: {e}")
 else:
-    st.info("الرجاء إدخال مفتاح الـ API في الحقل أعلاه للبدء.")
+    st.info("الرجاء إدخال مفتاح Groq API الخاص بك للبدء (تحصل عليه مجاناً وبكل سهولة من موقعهم الرسمي).")
