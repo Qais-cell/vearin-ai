@@ -1,42 +1,29 @@
 import streamlit as st
-import google.generativeai as genai
-import time
+import urllib.request
+import json
 
 st.set_page_config(page_title="VÆRIN AI", page_icon="🤖")
 
-st.title("🤖 مساعد VÆRIN الذكي")
-st.write("أهلاً بك! أدخل مفتاح Google Gemini API وابدأ المحادثة فوراً.")
+st.title("🤖 مساعد VÆRIN الذكي (بدون حدود)")
+st.write("أهلاً بك! هذا الإصدار يعمل بحرية كاملة وبدون قيود الحصص.")
 
-api_key = st.text_input("مفتاح API:", type="password")
+user_query = st.text_input("اطرح سؤالك على VÆRIN:")
 
-if api_key:
-    try:
-        genai.configure(api_key=api_key)
-        # استخدام الموديل الأحدث والأكثر استقراراً
-        model = genai.GenerativeModel("gemini-3.8-flash")
-        
-        user_query = st.text_input("اطرح سؤالك على VÆRIN:")
-        if st.button("إرسال"):
-            if user_query:
-                with st.spinner("جاري معالجة طلبك..."):
-                    try:
-                        # محاولة توليد الإجابة
-                        response = model.generate_content(user_query)
-                        st.success("الإجابة:")
-                        st.write(response.text)
-                    except Exception as api_err:
-                        # في حال ظهر خطأ الضغط أو الحد (Quota)
-                        if "429" in str(api_err) or "quota" in str(api_err).lower():
-                            st.warning("⚠️ تم الوصول للحد المؤقت للطلبات المجانية. جاري إعادة المحاولة تلقائياً...")
-                            time.sleep(5)
-                            response = model.generate_content(user_query)
-                            st.success("الإجابة:")
-                            st.write(response.text)
-                        else:
-                            st.error(f"خطأ في الرد: {api_err}")
-            else:
-                st.warning("الرجاء كتابة سؤال أولاً.")
-    except Exception as e:
-        st.error(f"حدث خطأ في الاتصال: {e}")
-else:
-    st.info("الرجاء إدخال مفتاح الـ API في الحقل أعلاه للبدء.")
+if st.button("إرسال"):
+    if user_query:
+        with st.spinner("جاري التفكير بحرية..."):
+            try:
+                # استخدام رابط مجاني مفتوح لا يتطلب قيود مفاتيح وقنوات ضغط
+                url = "https://text.pollinations.ai/" + urllib.parse.quote(user_query)
+                req = urllib.request.Request(
+                    url, 
+                    headers={'User-Agent': 'Mozilla/5.0'}
+                )
+                with urllib.request.urlopen(req) as response:
+                    answer = response.read().decode('utf-8')
+                    st.success("الإجابة:")
+                    st.write(answer)
+            except Exception as e:
+                st.error(f"حدث خطأ: {e}")
+    else:
+        st.warning("الرجاء كتابة سؤال أولاً.")
