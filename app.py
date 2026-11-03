@@ -4,7 +4,6 @@ import re
 
 st.set_page_config(page_title="VAERIN Ultimate Pro", page_icon=None, layout="centered")
 
-# فرض تهيئة الحالة من الصفر لمنع أي تعليق
 if "app_state" not in st.session_state:
     st.session_state.app_state = "setup"
 if "user_email" not in st.session_state:
@@ -16,7 +15,6 @@ def is_valid_email(email):
     pattern = r"^[\w\.-]+@[\w\.-]+\.\w+$"
     return re.match(pattern, email) is not None
 
-# التصميم العام الفخم والداكن
 st.markdown("""
     <style>
     .stApp {
@@ -71,7 +69,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 1. واجهة إعداد الأهداف الدراسية
 if st.session_state.app_state == "setup":
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
@@ -100,7 +97,6 @@ if st.session_state.app_state == "setup":
             st.session_state.app_state = "login"
             st.rerun()
 
-# 2. واجهة تسجيل الدخول
 elif st.session_state.app_state == "login":
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
@@ -118,7 +114,6 @@ elif st.session_state.app_state == "login":
             else:
                 st.error("الرجاء إدخال بريد إلكتروني حقيقي وصحيح (يحتوي على @ والنطاق).")
 
-# 3. واجهة الدردشة والتحكم
 elif st.session_state.app_state == "chat":
     st.title("VAERIN - Advanced Academic System")
 
@@ -181,4 +176,26 @@ elif st.session_state.app_state == "chat":
 
             for message in st.session_state.messages:
                 if message["role"] != "system":
-                    with
+                    with st.chat_message(message["role"]):
+                        st.write(message["content"])
+
+            if user_query := st.chat_input("Type your academic query here..."):
+                st.session_state.messages.append({"role": "user", "content": user_query})
+                with st.chat_message("user"):
+                    st.write(user_query)
+
+                with st.spinner("Executing advanced synthesis and retrieval..."):
+                    chat_completion = client.chat.completions.create(
+                        messages=st.session_state.messages,
+                        model="llama3-70b-8192",
+                        temperature=temperature,
+                        max_tokens=max_tokens_val,
+                    )
+                    
+                    assistant_answer = chat_completion.choices[0].message.content
+                    st.session_state.messages.append({"role": "assistant", "content": assistant_answer})
+                    with st.chat_message("assistant"):
+                        st.write(assistant_answer)
+
+        except Exception as e:
+            st.error(f"خطأ في الاتصال أو مفتاح API غير صالح. التفاصيل: {e}")
