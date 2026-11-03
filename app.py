@@ -1,118 +1,142 @@
 import streamlit as st
-from datetime import datetime
 
-# ==================== إعداد الصفحة ====================
 st.set_page_config(
     page_title="Vaerin",
     page_icon="✦",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
-# ==================== CSS يحاكي واجهة Grok ====================
+# ==================== CSS محسن يحاكي Grok ====================
 st.markdown("""
 <style>
-    /* خلفية عامة */
-    .stApp {
-        background-color: #f8f8f7;
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+    html, body, [class*="css"] {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
-    
-    /* إخفاء عناصر Streamlit الافتراضية */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    
+
+    .stApp {
+        background-color: #f7f7f5;
+    }
+
+    /* إخفاء عناصر Streamlit */
+    #MainMenu, footer, header {visibility: hidden;}
+    .stDeployButton {display: none;}
+
     /* السايدبار */
     section[data-testid="stSidebar"] {
-        background-color: #f0f0ee;
-        border-right: 1px solid #e0e0de;
+        background-color: #f0f0ee !important;
+        border-right: 1px solid #e5e5e3;
     }
-    
-    section[data-testid="stSidebar"] .stButton > button {
-        background-color: transparent;
-        border: 1px solid #d0d0ce;
-        border-radius: 12px;
-        color: #1a1a1a;
-        font-weight: 500;
-        width: 100%;
-        text-align: left;
-        padding: 10px 16px;
-        margin-bottom: 6px;
-        transition: all 0.2s;
+
+    section[data-testid="stSidebar"] button {
+        background: transparent !important;
+        border: 1px solid #dcdcd9 !important;
+        border-radius: 12px !important;
+        color: #1a1a1a !important;
+        font-weight: 500 !important;
+        padding: 10px 14px !important;
+        margin-bottom: 6px !important;
+        transition: 0.15s !important;
     }
-    
-    section[data-testid="stSidebar"] .stButton > button:hover {
-        background-color: #e8e8e6;
-        border-color: #c0c0be;
+
+    section[data-testid="stSidebar"] button:hover {
+        background: #e8e8e5 !important;
     }
-    
+
     /* الرسائل */
-    .user-message {
-        background-color: #e8e8e6;
-        border-radius: 18px;
-        padding: 14px 18px;
-        margin: 12px 0;
-        max-width: 75%;
-        margin-left: auto;
+    .user-bubble {
+        background: #e8e8e5;
         color: #1a1a1a;
+        padding: 12px 18px;
+        border-radius: 20px;
+        margin: 10px 0 10px auto;
+        max-width: 70%;
+        width: fit-content;
         font-size: 15.5px;
         line-height: 1.5;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.04);
     }
-    
-    .assistant-message {
-        background-color: transparent;
-        border-radius: 18px;
-        padding: 14px 4px;
-        margin: 12px 0;
+
+    .assistant-bubble {
+        background: transparent;
+        color: #1a1a1a;
+        padding: 8px 4px;
+        margin: 10px 0;
         max-width: 85%;
-        color: #1a1a1a;
         font-size: 15.5px;
-        line-height: 1.55;
+        line-height: 1.6;
     }
-    
-    /* العنوان الكبير في الصفحة الرئيسية */
-    .hero-title {
-        font-size: 32px;
-        font-weight: 500;
+
+    .assistant-name {
+        font-weight: 600;
+        font-size: 14px;
+        color: #555;
+        margin-bottom: 4px;
+    }
+
+    /* الصفحة الرئيسية */
+    .hero {
         text-align: center;
-        color: #1a1a1a;
-        margin-bottom: 28px;
-        letter-spacing: -0.5px;
+        padding-top: 18vh;
     }
-    
-    .model-badge {
-        display: inline-block;
-        background: #1a1a1a;
-        color: white;
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 13px;
+
+    .hero h1 {
+        font-size: 2.1rem;
         font-weight: 500;
+        color: #1a1a1a;
         margin-bottom: 8px;
+        letter-spacing: -0.6px;
     }
-    
-    /* منطقة الإدخال */
+
+    .hero p {
+        color: #666;
+        font-size: 1rem;
+        margin-bottom: 32px;
+    }
+
+    /* أزرار الاقتراحات */
+    .stButton > button {
+        background: white !important;
+        border: 1px solid #e0e0de !important;
+        border-radius: 16px !important;
+        color: #333 !important;
+        font-weight: 450 !important;
+        padding: 12px 16px !important;
+        transition: 0.15s !important;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    }
+
+    .stButton > button:hover {
+        background: #f5f5f3 !important;
+        border-color: #ccc !important;
+        transform: translateY(-1px);
+    }
+
+    /* صندوق الإدخال */
     .stChatInput {
         border-radius: 24px !important;
     }
-    
-    /* اقتراحات */
-    .suggestion-chip {
-        display: inline-block;
-        background: white;
-        border: 1px solid #e0e0de;
-        border-radius: 20px;
-        padding: 8px 16px;
-        margin: 6px;
-        font-size: 14px;
-        color: #333;
-        cursor: pointer;
-        transition: all 0.2s;
+
+    div[data-testid="stChatInput"] {
+        background: transparent !important;
     }
-    
-    .suggestion-chip:hover {
-        background: #f0f0ee;
-        border-color: #c0c0be;
+
+    /* شريط علوي بسيط */
+    .top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 8px 8px 8px;
+        margin-bottom: 10px;
+    }
+
+    .logo {
+        font-size: 20px;
+        font-weight: 600;
+        color: #1a1a1a;
+        letter-spacing: -0.5px;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -127,83 +151,78 @@ if "chat_history" not in st.session_state:
 # ==================== السايدبار ====================
 with st.sidebar:
     st.markdown("### ✦ Vaerin")
-    st.markdown("---")
+    st.markdown("")
     
     if st.button("＋  New chat", use_container_width=True):
         st.session_state.messages = []
         st.rerun()
     
-    st.markdown("")
-    st.caption("Recent")
-    
-    # محاكاة سجل المحادثات
-    if st.session_state.chat_history:
-        for i, chat in enumerate(st.session_state.chat_history[-8:]):
-            if st.button(chat[:40] + "..." if len(chat) > 40 else chat, key=f"hist_{i}", use_container_width=True):
-                pass
-    else:
-        st.caption("No previous chats")
-    
     st.markdown("---")
-    st.caption("Vaerin • Local Model")
-
-# ==================== الصفحة الرئيسية / الشات ====================
-if not st.session_state.messages:
-    # ========== Intro Screen (مثل صفحة Grok) ==========
-    st.markdown("<br><br><br>", unsafe_allow_html=True)
+    st.caption("Recent chats")
     
-    col1, col2, col3 = st.columns([1, 2.2, 1])
-    with col2:
-        st.markdown('<div class="hero-title">What should we explore?</div>', unsafe_allow_html=True)
-        
-        # اقتراحات سريعة
-        suggestions = [
-            "Explain quantum computing simply",
-            "Write a short story about a robot",
-            "Help me plan a trip to Tokyo",
-            "What is the meaning of life?"
-        ]
-        
-        cols = st.columns(2)
-        for i, suggestion in enumerate(suggestions):
-            with cols[i % 2]:
-                if st.button(suggestion, key=f"sug_{i}", use_container_width=True):
-                    st.session_state.messages.append({"role": "user", "content": suggestion})
-                    st.rerun()
+    if st.session_state.chat_history:
+        for i, chat in enumerate(reversed(st.session_state.chat_history[-10:])):
+            short = chat[:38] + "..." if len(chat) > 38 else chat
+            st.button(short, key=f"h_{i}", use_container_width=True)
+    else:
+        st.caption("No chats yet")
+
+# ==================== المحتوى الرئيسي ====================
+if not st.session_state.messages:
+    # ========== الصفحة الرئيسية (مثل Grok) ==========
+    st.markdown("""
+    <div class="hero">
+        <h1>What should we explore?</h1>
+        <p>Vaerin is ready to help</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # اقتراحات
+    suggestions = [
+        "Explain something complex simply",
+        "Write a creative short story",
+        "Help me plan my next trip",
+        "What is the meaning of life?"
+    ]
+
+    cols = st.columns(2)
+    for i, s in enumerate(suggestions):
+        with cols[i % 2]:
+            if st.button(s, key=f"s_{i}", use_container_width=True):
+                st.session_state.messages.append({"role": "user", "content": s})
+                st.rerun()
 
 else:
-    # ========== عرض الرسائل ==========
+    # ========== عرض المحادثة ==========
     for msg in st.session_state.messages:
         if msg["role"] == "user":
-            st.markdown(f'<div class="user-message">{msg["content"]}</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="user-bubble">{msg["content"]}</div>', unsafe_allow_html=True)
         else:
-            st.markdown(f'<div class="assistant-message"><b>Vaerin</b><br>{msg["content"]}</div>', unsafe_allow_html=True)
+            st.markdown(f'''
+                <div class="assistant-bubble">
+                    <div class="assistant-name">Vaerin</div>
+                    {msg["content"]}
+                </div>
+            ''', unsafe_allow_html=True)
 
-# ==================== صندوق الإدخال ====================
+# ==================== الإدخال ====================
 prompt = st.chat_input("What do you want to know?")
 
 if prompt:
-    # إضافة رسالة المستخدم
     st.session_state.messages.append({"role": "user", "content": prompt})
     
-    # حفظ في التاريخ
     if prompt not in st.session_state.chat_history:
         st.session_state.chat_history.append(prompt)
-    
-    # هنا تربط نموذجك الحقيقي (Vaerin)
-    # حالياً رد وهمي فقط
-    with st.spinner("Vaerin is thinking..."):
-        # ==================== مكان ربط النموذج الحقيقي ====================
-        # استبدل الجزء التالي بكود استدعاء نموذجك
-        # مثال:
-        # response = your_vaerin_model.generate(prompt)
-        
-        fake_response = f"""This is a placeholder response from **Vaerin**.
 
-You said: *"{prompt}"*
+    # ========== هنا تربط نموذجك الحقيقي ==========
+    with st.spinner(""):
+        # استبدل هذا الجزء بكود نموذجك
+        response = f"""This is still a placeholder from **Vaerin**.
 
-Replace this section in the code with your actual model inference logic."""
+You said: "{prompt}"
+
+Replace this section with your actual model code."""
         
-        st.session_state.messages.append({"role": "assistant", "content": fake_response})
+        st.session_state.messages.append({"role": "assistant", "content": response})
     
     st.rerun()
