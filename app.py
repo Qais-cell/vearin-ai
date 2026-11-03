@@ -4,7 +4,7 @@ from groq import Groq
 st.set_page_config(page_title="VÆRIN AI", page_icon="🤖")
 
 st.title("🤖 مساعد VÆRIN الذكي")
-st.write("أهلاً بك! النظام متصل بأسلوب المحادثة المباشرة.")
+st.write("أهلاً بك! النظام متصل ومستعد للمحادثة.")
 
 api_key = st.text_input("أدخل مفتاح Groq API:", type="password")
 
@@ -16,19 +16,7 @@ if api_key:
         if st.button("إرسال"):
             if user_query:
                 with st.spinner("جاري التفكير والرد..."):
-                    # جلب قائمة النماذج وتصفية نماذج الأمان لتحديد نموذج محادثة حصراً
-                    models_response = client.models.list()
-                    all_models = [m.id for m in models_response.data]
-                    
-                    # استبعاد نماذج الحماية والأمان (guard / whisper / vision)
-                    chat_models = [
-                        m for m in all_models 
-                        if not any(x in m.lower() for x in ['guard', 'whisper', 'vision', 'safeguard'])
-                    ]
-                    
-                    # اختيار أول نموذج محادثة متاح
-                    selected_model = chat_models[0] if chat_models else "llama-3.1-8b-instant"
-                    
+                    # تثبيت نموذج المحادثة المباشر والسريع حصراً
                     chat_completion = client.chat.completions.create(
                         messages=[
                             {
@@ -36,7 +24,7 @@ if api_key:
                                 "content": user_query,
                             }
                         ],
-                        model=selected_model,
+                        model="llama-3.1-8b-instant",
                     )
                     
                     answer = chat_completion.choices[0].message.content
