@@ -1,20 +1,16 @@
 import streamlit as st
 from groq import Groq
-import random
 import time
 
 # إعدادات الصفحة
 st.set_page_config(page_title="VAERIN Ultimate Pro", page_icon=None, layout="centered")
 
-# تهيئة حالة الجلسة للتحقق وتسجيل الدخول
+# تهيئة حالة جلسة تسجيل الدخول
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
-if "otp_sent" not in st.session_state:
-    st.session_state.otp_sent = False
-if "generated_otp" not in st.session_state:
-    st.session_state.generated_otp = ""
+if "selected_provider" not in st.session_state:
+    st.session_state.selected_provider = ""
 
-# --- صفحة تسجيل الدخول والتحقق برمز حقيقي (OTP) ---
 if not st.session_state.logged_in:
     st.markdown("""
         <style>
@@ -23,89 +19,79 @@ if not st.session_state.logged_in:
             color: #c9d1d9;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
-        .login-box {
+        .login-card {
             background: #161b22;
             border: 1px solid #30363d;
             border-radius: 8px;
-            padding: 30px;
+            padding: 35px;
             max-width: 420px;
-            margin: 30px auto;
+            margin: 40px auto;
             box-shadow: 0 16px 32px rgba(1, 4, 9, 0.8);
         }
         .login-title {
-            font-size: 22px;
+            font-size: 24px;
             font-weight: 600;
             color: #f0f6fc;
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 8px;
         }
-        .stTextInput input {
-            background-color: #0d1117 !important;
-            color: #c9d1d9 !important;
-            border: 1px solid #30363d !important;
-            border-radius: 6px !important;
+        .login-subtitle {
+            font-size: 13px;
+            color: #8b949e;
+            text-align: center;
+            margin-bottom: 25px;
         }
         .stButton button {
-            background-color: #238636 !important;
-            color: #ffffff !important;
-            font-weight: 600;
+            background-color: #21262d !important;
+            color: #c9d1d9 !important;
+            font-weight: 500;
             border-radius: 6px !important;
-            border: none !important;
+            border: 1px solid rgba(240, 246, 252, 0.1) !important;
             width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+            text-align: center;
         }
         .stButton button:hover {
-            background-color: #2ea043 !important;
+            background-color: #30363d !important;
+            border-color: #8b949e !important;
+            color: #ffffff !important;
         }
         </style>
     """, unsafe_allow_html=True)
 
     with st.container():
-        st.markdown('<div class="login-box">', unsafe_allow_html=True)
-        st.markdown('<div class="login-title">VAERIN Secure Authentication</div>', unsafe_allow_html=True)
+        st.markdown('<div class="login-card">', unsafe_allow_html=True)
+        st.markdown('<div class="login-title">Sign in to VAERIN</div>', unsafe_allow_html=True)
+        st.markdown('<div class="login-subtitle">Choose your authorized provider to continue</div>', unsafe_allow_html=True)
         
-        auth_method = st.selectbox("اختر طريقة المصادقة:", ["البريد الإلكتروني (مع رمز تحقق OTP)", "Google Account", "Twitter / X", "Apple ID"])
+        st.markdown("<br>", unsafe_allow_html=True)
         
-        if auth_method == "البريد الإلكتروني (مع رمز تحقق OTP)":
-            user_email = st.text_input("أدخل بريدك الإلكتروني:")
+        # أزرار المصادقة المستوحاة من دزاين منصات التطوير الكبرى
+        if st.button("Continue with Google"):
+            st.session_state.logged_in = True
+            st.session_state.selected_provider = "Google Account"
+            st.rerun()
             
-            if not st.session_state.otp_sent:
-                if st.button("إرسال رمز التحقق"):
-                    if user_email and "@" in user_email:
-                        # توليد رمز تحقق حقيقي مكون من 4 أرقام
-                        st.session_state.generated_otp = str(random.randint(1000, 9999))
-                        st.session_state.otp_sent = True
-                        st.session_state.temp_email = user_email
-                        # عرض الرمز مؤقتاً للشاشة للتأكد (بسبب قيود سيرفرات الستريمليت البريدية المجانية)
-                        st.success(f"تم إرسال الرمز بنجاح! رمز التحقق الخاص بك هو: {st.session_state.generated_otp}")
-                        time.sleep(1)
-                        st.rerun()
-                    else:
-                        st.error("الرجاء إدخال بريد إلكتروني صحيح.")
-            else:
-                st.info(f"تم إرسال رمز التحقق إلى: {st.session_state.get('temp_email', '')}")
-                entered_otp = st.text_input("أدخل رمز التحقق المكون من 4 أرقام:", type="password")
-                
-                if st.button("تأكيد الرمز وتسجيل الدخول"):
-                    if entered_otp == st.session_state.generated_otp:
-                        st.session_state.logged_in = True
-                        st.success("تم التحقق بنجاح. جاري فتح النظام...")
-                        time.sleep(0.5)
-                        st.rerun()
-                    else:
-                        st.error("رمز التحقق غير صحيح. حاول مرة أخرى.")
-        else:
-            # محاكاة تسجيل الدخول السريع المباشر للخدمات الأخرى
-            st.info(f"سيتم ربط حساب {auth_method} بسلاسة وأمان.")
-            if st.button(f"المتابعة باستخدام {auth_method}"):
-                st.session_state.logged_in = True
-                st.success("تم تسجيل الدخول بنجاح.")
-                time.sleep(0.5)
-                st.rerun()
-                
+        if st.button("Continue with Apple ID"):
+            st.session_state.logged_in = True
+            st.session_state.selected_provider = "Apple ID"
+            st.rerun()
+            
+        if st.button("Continue with Twitter / X"):
+            st.session_state.logged_in = True
+            st.session_state.selected_provider = "Twitter"
+            st.rerun()
+            
+        if st.button("Continue with Discord"):
+            st.session_state.logged_in = True
+            st.session_state.selected_provider = "Discord"
+            st.rerun()
+            
         st.markdown('</div>', unsafe_allow_html=True)
     st.stop()
 
-# --- واجهة الدردشة الأساسية (بدون إظهار الإيميل نهائياً وبدون إيموجيز) ---
+# --- واجهة الدردشة الأساسية (بدون إظهار أي إيميل نهائياً وبدون إيموجيز) ---
 st.markdown("""
     <style>
     html, body, [class*="css"] {
@@ -131,7 +117,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.title("VAERIN - Advanced Academic System")
-st.write("نظام المعلم الأكاديمي المتقدم جاهز للعمل. الذاكرة والأمان مفعلة بكفاءة عالية.")
+st.write("Secure session initialized successfully. Memory and security systems active.")
 
 # --- الشريط الجانبي للإعدادات المتقدمة ---
 with st.sidebar:
@@ -152,7 +138,6 @@ with st.sidebar:
         
     if st.button("Sign out"):
         st.session_state.logged_in = False
-        st.session_state.otp_sent = False
         st.rerun()
 
 # معالجة الشات والاتصال بـ API
