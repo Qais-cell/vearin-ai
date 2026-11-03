@@ -58,19 +58,4 @@ if st.session_state.step == "setup":
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown('<div class="setup-title">VÆRIN AI Workspace</div>', unsafe_allow_html=True)
-        st.markdown('<div class="setup-sub">Configure your autonomous academic environment</div>', unsafe_allow_html=True)
-        
-        goal_selection = st.selectbox(
-            "Primary Academic Objective:",
-            [
-                "بحث علمي متقدم وتحليل عميق",
-                "شرح المناهج الدراسية وتبسيط النظريات",
-                "تلخيص المقالات والكتب الأكاديمية",
-                "استشارات برمجية وهندسية بحتة"
-            ]
-        )
-        
-        academic_style = st.radio(
-            "Scholarly Interaction Mode:",
-            ["صارم وأكاديمي بحت (بدون حشو)", "أكاديمي توجيهي مع أمثلة تفصيل
+        st.markdown('<div class="setup-title">VÆ
