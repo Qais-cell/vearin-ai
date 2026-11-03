@@ -1,10 +1,10 @@
 import streamlit as st
 from groq import Groq
 
-st.set_page_config(page_title="VÆRIN Study AI", page_icon="🧠")
+st.set_page_config(page_title="VÆRIN Ultimate Study AI", page_icon="🎓")
 
-st.title("🧠 VÆRIN - معلمك الأكاديمي ذو الذاكرة الخارقة")
-st.write("أهلاً بك! هذا الإصدار يتذكر كل تفاصيل نقاشنا وسؤالك السابق لتقديم إجابات متصلة وذكية.")
+st.title("🎓 VÆRIN - معلمك الأكاديمي الخارق والمتكامل")
+st.write("أهلاً بك! الإصدار النهائي المتكامل: ذاكرة حديدية، ذكاء فائق يتفوق على المدرس الخصوصي، وأداء سريع.")
 
 api_key = st.text_input("أدخل مفتاح Groq API:", type="password")
 
@@ -12,34 +12,36 @@ if api_key:
     try:
         client = Groq(api_key=api_key)
         
-        # تهيئة ذاكرة المحادثة إذا لم تكن موجودة
+        # 1. تهيئة ذاكرة المحادثة المتكاملة إذا لم تكن موجودة
         if "messages" not in st.session_state:
             st.session_state.messages = [
                 {
                     "role": "system", 
                     "content": (
-                        "أنت VÆRIN، المعلم الأكاديمي الخارق الذي يمتلك ذاكرة استثنائية وذكاء يفوق التدريس الخصوصي. "
-                        "تتذكر كل ما قاله الطالب في المحادثة الحالية وتربط المعلومات ببعضها بدقة. "
-                        "قدم دائماً شروحات عميقة، أمثلة واقعية، واختبر فهم الطالب بسؤال سريع في النهاية. "
-                        "كن مباشراً، ذكياً، ومبدعاً باللغة العربية الفصحى."
+                        "أنت VÆRIN، المعلم الأكاديمي الخارق الذي يمتلك ذاكرة استثنائية وذكاء يفوق التدريس الخصوصي البشري بكثير. "
+                        "تتذكر كل تفاصيل المحادثة الحالية وتربط المعلومات ببعضها بدقة عالية. "
+                        "قدم دائماً شروحات عميقة، أمثلة واقعية، واختبر فهم الطالب بسؤال سريع أو تمرين في النهاية. "
+                        "ممنوع منعاً باتاً استخدام الردود الدبلوماسية الفارغة أو المقدمات السطحية. "
+                        "كن مباشراً، ذكياً، ومبدعاً باللغة العربية الفصحى الفصيحة."
                     )
                 }
             ]
 
-        # عرض سجل المحادثة السابق على الشاشة
+        # 2. عرض سجل المحادثة السابق (الذاكرة المتكاملة) على الشاشة
         for message in st.session_state.messages:
             if message["role"] != "system":
                 with st.chat_message(message["role"]):
                     st.write(message["content"])
 
-        # استقبال رسالة جديدة من المستخدم
+        # 3. صندوق الإدخال التفاعلي للمحادثة المستمرة
         if user_query := st.chat_input("اطرح سؤالك أو تابع النقاش مع VÆRIN..."):
-            # إضافة رسالة المستخدم إلى الذاكرة وعرضها
+            # إضافة رسالة المستخدم إلى الذاكرة وعرضها فوراً
             st.session_state.messages.append({"role": "user", "content": user_query})
             with st.chat_message("user"):
                 st.write(user_query)
 
-            with st.spinner("جاري التفكير وربط الأفكار..."):
+            with st.spinner("جاري التفكير، استرجاع الذاكرة، وإعداد الشرح..."):
+                # البحث الذكي والتصفية التلقائية للموديلات لمنع أخطاء 404 أو 429
                 models_response = client.models.list()
                 all_models = [m.id for m in models_response.data]
                 
@@ -50,7 +52,7 @@ if api_key:
                 
                 selected_model = active_models[0] if active_models else all_models[0]
                 
-                # إرسال كامل سجل المحادثة (الذاكرة) إلى النموذج
+                # إرسال سجل الذاكرة بالكامل إلى نموذج Groq
                 chat_completion = client.chat.completions.create(
                     messages=st.session_state.messages,
                     model=selected_model,
@@ -59,7 +61,7 @@ if api_key:
                 
                 assistant_answer = chat_completion.choices[0].message.content
                 
-                # إضافة إجابة المساعد إلى الذاكرة وعرضها
+                # إضافة رد المساعد إلى الذاكرة وعرضه في الشات
                 st.session_state.messages.append({"role": "assistant", "content": assistant_answer})
                 with st.chat_message("assistant"):
                     st.write(assistant_answer)
