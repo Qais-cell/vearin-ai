@@ -136,4 +136,28 @@ else:
                 }
             ]
 
-        for message in st.session_state.messages
+        for message in st.session_state.messages:
+            if message["role"] != "system":
+                with st.chat_message(message["role"]):
+                    st.write(message["content"])
+
+        if user_query := st.chat_input("Type your academic query here..."):
+            st.session_state.messages.append({"role": "user", "content": user_query})
+            with st.chat_message("user"):
+                st.write(user_query)
+
+            with st.spinner("Analyzing and retrieving context..."):
+                chat_completion = client.chat.completions.create(
+                    messages=st.session_state.messages,
+                    model="llama3-70b-8192",
+                    temperature=temperature,
+                    max_tokens=max_tokens_val,
+                )
+                
+                assistant_answer = chat_completion.choices[0].message.content
+                st.session_state.messages.append({"role": "assistant", "content": assistant_answer})
+                with st.chat_message("assistant"):
+                    st.write(assistant_answer)
+
+    except Exception as e:
+        st.error(f"خطأ في الاتصال أو مفتاح API غير صالح. التفاصيل: {e}")
