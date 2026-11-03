@@ -16,17 +16,27 @@ def is_valid_email(email):
 if not st.session_state.logged_in:
     st.markdown("""
         <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
         .stApp {
             background: #0d1117;
             color: #c9d1d9;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            animation: fadeIn 0.5s ease-out;
         }
         .stTextInput input {
             background-color: #161b22 !important;
             color: #c9d1d9 !important;
             border: 1px solid #30363d !important;
             border-radius: 8px !important;
-            padding: 10px !important;
+            padding: 12px !important;
+            transition: all 0.3s ease;
+        }
+        .stTextInput input:focus {
+            border-color: #58a6ff !important;
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15);
         }
         .stButton button {
             background-color: #21262d !important;
@@ -38,11 +48,14 @@ if not st.session_state.logged_in:
             margin-top: 10px;
             padding: 12px;
             font-size: 14px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .stButton button:hover {
             background-color: #30363d !important;
             border-color: #8b949e !important;
             color: #ffffff !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
         }
         </style>
     """, unsafe_allow_html=True)
@@ -67,6 +80,10 @@ if not st.session_state.logged_in:
 
 st.markdown("""
     <style>
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
     html, body, [class*="css"] {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
@@ -77,10 +94,15 @@ st.markdown("""
     .stChatMessage {
         background: #161b22;
         border: 1px solid #30363d;
-        border-radius: 8px;
+        border-radius: 10px;
         padding: 16px;
         margin-bottom: 14px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+        animation: slideIn 0.35s ease-out;
+        transition: border-color 0.2s ease;
+    }
+    .stChatMessage:hover {
+        border-color: #484f58;
     }
     h1, h2, h3 {
         color: #f0f6fc;
@@ -89,7 +111,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# العنوان الرئيسي النظيف بدون إظهار الإيميل في الوجه
 st.title("VAERIN - Advanced Academic System")
 
 with st.sidebar:
