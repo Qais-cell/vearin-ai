@@ -1,6 +1,7 @@
 import streamlit as st
 from groq import Groq
 import re
+import time
 
 st.set_page_config(page_title="VAERIN Ultimate Pro", page_icon=None, layout="centered")
 
@@ -15,79 +16,60 @@ def is_valid_email(email):
     pattern = r"^[\w\.-]+@[\w\.-]+\.\w+$"
     return re.match(pattern, email) is not None
 
-# --- أنترو ترحيبي فخم وحركي (بنمط Gemini/Groq الرهيب) ---
+# --- أنترو تلقائي أسطوري (يظهر وحده بدون أزرار ثم يختفي) ---
 if st.session_state.show_intro and not st.session_state.logged_in:
     st.markdown("""
         <style>
-        @keyframes glowPulse {
-            0% { opacity: 0.3; transform: scale(0.98); filter: drop-shadow(0 0 2px rgba(88,166,255,0.2)); }
-            50% { opacity: 1; transform: scale(1.02); filter: drop-shadow(0 0 25px rgba(88,166,255,0.6)); }
-            100% { opacity: 0.3; transform: scale(0.98); filter: drop-shadow(0 0 2px rgba(88,166,255,0.2)); }
-        }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes introAnim {
+            0% { opacity: 0; transform: scale(0.95); filter: blur(5px); }
+            50% { opacity: 1; transform: scale(1); filter: blur(0px); }
+            100% { opacity: 0; transform: scale(1.05); filter: blur(5px); }
         }
         .stApp {
             background: radial-gradient(circle at center, #161b22 0%, #0d1117 100%);
             color: #c9d1d9;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
-        .intro-container {
-            text-align: center;
-            padding: 110px 20px;
-            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        .auto-intro {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #0d1117;
+            z-index: 99999;
+            animation: introAnim 2.8s ease-in-out forwards;
         }
         .intro-logo {
-            font-size: 42px;
+            font-size: 46px;
             font-weight: 800;
             background: linear-gradient(135deg, #f0f6fc 0%, #58a6ff 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 12px;
-            animation: glowPulse 3s infinite ease-in-out;
+            margin-bottom: 10px;
             letter-spacing: -1.5px;
         }
         .intro-desc {
-            font-size: 15px;
+            font-size: 14px;
             color: #8b949e;
-            margin-bottom: 40px;
             font-weight: 400;
             letter-spacing: 0.5px;
         }
-        .stButton button {
-            background: linear-gradient(135deg, #238636 0%, #2ea043 100%) !important;
-            color: #ffffff !important;
-            font-weight: 600;
-            border-radius: 12px !important;
-            border: 1px solid rgba(255,255,255,0.1) !important;
-            padding: 14px 35px;
-            font-size: 16px;
-            width: 100%;
-            box-shadow: 0 8px 24px rgba(35, 134, 54, 0.4);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .stButton button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 32px rgba(46, 160, 67, 0.6);
-            filter: brightness(1.1);
-        }
         </style>
-    """, unsafe_allow_html=True)
-
-    st.markdown("""
-        <div class="intro-container">
+        <div class="auto-intro">
             <div class="intro-logo">VÆRIN AI</div>
-            <div class="intro-desc">Autonomous Academic Intelligence & Advanced Neural Workspace</div>
+            <div class="intro-desc">Autonomous Academic Intelligence</div>
         </div>
     """, unsafe_allow_html=True)
-
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        if st.button("Initialize Neural Core"):
-            st.session_state.show_intro = False
-            st.rerun()
-    st.stop()
+    
+    # انتظار لمدة 2.6 ثانية ثم الانتقال تلقائياً للواجهة التالية
+    time.sleep(2.6)
+    st.session_state.show_intro = False
+    st.rerun()
 
 # --- مرحلة تسجيل الدخول الحقيقي ---
 if not st.session_state.logged_in:
