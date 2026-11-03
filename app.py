@@ -1,120 +1,118 @@
 import streamlit as st
 from groq import Groq
+import time
 
-# إعدادات الصفحة بتصميم عصري
-st.set_page_config(page_title="VÆRIN Ultimate Study AI", page_icon="🎓", layout="centered")
+# إعدادات الصفحة
+st.set_page_config(page_title="VÆRIN Ultimate Pro", page_icon="🎓", layout="centered")
 
-# إضافة تأثيرات جمالية وانيميشن خفيف (CSS Styling) للواجهة
+# --- أنيميشن فتح الموقع (Intro Animation) وتصميم يحاكي آيفون 18 برو ماكس ---
+if "intro_done" not in st.session_state:
+    st.session_state.intro_done = False
+
+if not st.session_state.intro_done:
+    placeholder = st.empty()
+    with placeholder.container():
+        st.markdown("""
+            <style>
+            .intro-screen {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 80vh;
+                animation: fadeInOut 1.5s ease-in-out;
+            }
+            .intro-logo {
+                font-size: 50px;
+                font-weight: 800;
+                background: linear-gradient(135deg, #007AFF, #5856D6, #FF2D55);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                text-align: center;
+                font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif;
+            }
+            .intro-sub {
+                font-size: 18px;
+                color: #8E8E93;
+                margin-top: 10px;
+                font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+            }
+            @keyframes fadeInOut {
+                0% { opacity: 0; transform: scale(0.95); }
+                50% { opacity: 1; transform: scale(1); }
+                100% { opacity: 1; }
+            }
+            </style>
+            <div class="intro-screen">
+                <div class="intro-logo">VÆRIN Pro</div>
+                <div class="intro-sub">جاري تحميل النظام بسلاسة الآيفون...</div>
+            </div>
+        """, unsafe_allow_html=True)
+        time.sleep(1.2)  # مدة الانترو الخفيف والسريع
+    st.session_state.intro_done = True
+    st.rerun()
+
+# --- إعدادات التصميم المتقدمة (تشبه ثيم آيفون 18 برو ماكس وسلاسته) ---
 st.markdown("""
     <style>
-    .main {
-        background-color: #0e1117;
+    /* خطوط وأسلوب يحاكي نظام iOS */
+    html, body, [class*="css"] {
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Icons", "Helvetica Neue", Helvetica, Arial, sans-serif;
     }
+    .main {
+        background-color: #000000;
+        color: #F5F5F7;
+    }
+    /* تأثيرات الزجاج الناعم (Glassmorphism) للرسائل */
     .stChatMessage {
-        border-radius: 15px;
-        padding: 10px;
-        margin-bottom: 10px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        transition: all 0.3s ease;
+        background: rgba(28, 28, 30, 0.75);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 0.5px solid rgba(255, 255, 255, 0.15);
+        border-radius: 20px;
+        padding: 14px;
+        margin-bottom: 12px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
     }
     .stChatMessage:hover {
-        transform: translateY(-2px);
+        transform: scale(1.005);
     }
+    /* عناوين متدرجة فخمة */
     h1 {
-        background: linear-gradient(90deg, #4f46e5, #ec4899);
+        background: linear-gradient(135deg, #0A84FF, #5E5CE6, #FF375F);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        font-weight: 800;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+    }
+    /* حقل الإدخال بتصميم آيفون */
+    .stChatInputContainer {
+        border-radius: 25px !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        background: rgba(44, 44, 46, 0.6) !important;
+        backdrop-filter: blur(15px);
     }
     </style>
 """, unsafe_allow_html=True)
 
-st.title("🎓 VÆRIN - معلمك الأكاديمي الخارق")
-st.write("أهلاً بك في الإصدار الفائق: واجهة حركية متطورة، تحكم كامل بالإعدادات، وذاكرة حديدية.")
+st.title("🎓 VÆRIN - المعلم الخارق (iOS 18 Edition)")
+st.write("أهلاً بك! النظام يعمل بسلاسة فائقة، بذاكرة حديدية، وشخصية أكاديمية متكاملة.")
 
-# --- شريط الإعدادات الجانبي الحقيقي للطالب ---
+# --- شريط الإعدادات الجانبي الحقيقي والمتقدم ---
 with st.sidebar:
-    st.header("⚙️ إعدادات التحكم الخارقة")
+    st.header("⚙️ إعدادات الآيفون المتقدمة")
     
     api_key = st.text_input("🔑 مفتاح Groq API:", type="password")
     
     st.markdown("---")
-    st.subheader("🎛️ خيارات النموذج")
+    st.subheader("🌐 تفضيلات الواجهة واللغة")
     
-    # خيار التحكم بدرجة الإبداع (Temperature)
-    temperature = st.slider("درجة الإبداع والدقة (Temperature):", min_value=0.0, max_value=1.0, value=0.7, step=0.1)
-    
-    # خيار التحكم بعدد التوكنات للرد
-    max_tokens_val = st.slider("طول الشرح (Max Tokens):", min_value=256, max_value=2048, value=1024, step=128)
+    app_language = st.selectbox("لغة التطبيق:", ["العربية (فصيحة)", "العربية (اللهجة المحلية)", "English"])
+    ui_theme = st.selectbox("لون الواجهة والنمط:", ["الوضع الداكن (Dark OLED)", "وضع الفضة الزجاجي (Glass)", "وضع النهار الناصع"])
+    font_style = st.selectbox("نوع الخط:", ["SF Pro (افتراضي آيفون)", "Classic Arabic", "Modern Sans"])
     
     st.markdown("---")
-    # زر مسح ذاكرة المحادثة لبدء درس جديد
-    if st.button("🗑️ مسح الذاكرة وبدء درس جديد"):
-        if "messages" in st.session_state:
-            del st.session_state.messages
-        st.success("تم مسح الذاكرة بنجاح!")
-        st.rerun()
-
-# التحقق من إدخال المفتاح لبدء التشغيل
-if api_key:
-    try:
-        client = Groq(api_key=api_key)
-        
-        # 1. تهيئة ذاكرة المحادثة وشخصية المعلم الأكاديمي الخارق
-        if "messages" not in st.session_state:
-            st.session_state.messages = [
-                {
-                    "role": "system", 
-                    "content": (
-                        "أنت VÆRIN، المعلم الأكاديمي الذكي والخارق. تمتلك ذاكرة استثنائية وتربط تفاصيل المحادثة بدقة عالية. "
-                        "قاعدة صارمة جداً: لا تقم أبداً بعمل اختبارات أو أسئلة امتحانية للطالب إلا إذا طلب منك ذلك صراحةً. "
-                        "إذا طلب منك التحدث باللهجة المحددة (مثل اللهجة السعودية أو غيرها) أو أي أسلوب حواري، نفذ طلبه في السوالف والشرح الطبيعي فوراً وبدون أي امتحانات. "
-                        "كن مباشراً، ذكياً، ومبدعاً باللغة العربية الفصحى أو اللهجة المطلوبة."
-                    )
-                }
-            ]
-
-        # 2. عرض سجل المحادثة السابق مع الانيميشن والتنسيق
-        for message in st.session_state.messages:
-            if message["role"] != "system":
-                with st.chat_message(message["role"]):
-                    st.write(message["content"])
-
-        # 3. صندوق الإدخال التفاعلي المطور
-        if user_query := st.chat_input("اطرح سؤالك أو اطلب شرح المادة..."):
-            # إضافة رسالة المستخدم إلى الذاكرة وعرضها
-            st.session_state.messages.append({"role": "user", "content": user_query})
-            with st.chat_message("user"):
-                st.write(user_query)
-
-            with st.spinner("✨ جاري التفكير بعمق، استرجاع الذاكرة، وإعداد الشرح الخارق..."):
-                # التصفية التلقائية الذكية للموديلات لمنع أخطاء 404 أو 429
-                models_response = client.models.list()
-                all_models = [m.id for m in models_response.data]
-                
-                active_models = [
-                    m for m in all_models 
-                    if not any(x in m.lower() for x in ['guard', 'whisper', 'vision', 'safeguard', 'orpheus', 'audio', 'prompt', 'embedding', 'allam'])
-                ]
-                
-                selected_model = active_models[0] if active_models else all_models[0]
-                
-                # إرسال الطلب مع الإعدادات المخصصة من شريط التحكم
-                chat_completion = client.chat.completions.create(
-                    messages=st.session_state.messages,
-                    model=selected_model,
-                    temperature=temperature,
-                    max_tokens=max_tokens_val,
-                )
-                
-                assistant_answer = chat_completion.choices[0].message.content
-                
-                # إضافة رد المساعد إلى الذاكرة وعرضه في الشات
-                st.session_state.messages.append({"role": "assistant", "content": assistant_answer})
-                with st.chat_message("assistant"):
-                    st.write(assistant_answer)
-
-    except Exception as e:
-        st.error(f"حدث خطأ في الاتصال: {e}")
-else:
-    st.info("👈 الرجاء إدخال مفتاح Groq API في الشريط الجانبي (Sidebar) للبدء واستعراض الواجهة الخرافية.")
+    st.subheader("🎛️ أداء النموذج الأكاديمي")
+    temperature = st.slider("درجة الإبداع والدقة (Temperature):", 0.0, 1.0, 0.7, 0.1)
+    max_tokens
