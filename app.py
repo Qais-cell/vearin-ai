@@ -4,7 +4,7 @@ from groq import Groq
 st.set_page_config(page_title="VÆRIN AI", page_icon="🤖")
 
 st.title("🤖 مساعد VÆRIN الذكي")
-st.write("أهلاً بك! النظام متصل بنماذج المحادثة المباشرة حصراً.")
+st.write("أهلاً بك! النظام متصل ومستعد للمحادثة.")
 
 api_key = st.text_input("أدخل مفتاح Groq API:", type="password")
 
@@ -17,17 +17,14 @@ if api_key:
             if user_query:
                 with st.spinner("جاري التفكير والرد..."):
                     models_response = client.models.list()
-                    all_models = [m.id for m in models_response.data]
-                    
-                    # تصفية قوية جداً لاستبعاد أي موديل صوتي، أمان، أو يتطلب شروط خاصة
-                    chat_models = [
-                        m for m in all_models 
-                        if any(x in m.lower() for x in ['llama', 'mixtral', 'gemma']) 
-                        and not any(x in m.lower() for x in ['guard', 'whisper', 'vision', 'safeguard', 'orpheus', 'audio', 'prompt'])
+                    # استخراج جميع النماذج المتاحة فعلياً في حسابك وتجنب النماذج المعطلة أو الحماية
+                    active_models = [
+                        m.id for m in models_response.data 
+                        if not any(x in m.id.lower() for x in ['guard', 'whisper', 'vision', 'safeguard', 'orpheus', 'audio', 'prompt', 'embedding'])
                     ]
                     
-                    # اختيار أول موديل محادثة متوافق، أو الاعتماد على اسم افتراضي مضمون
-                    selected_model = chat_models[0] if chat_models else "llama3-70b-8192"
+                    # اختيار أول نموذج نشط وحقيقي متوفر في القائمة
+                    selected_model = active_models[0] if active_models else "llama-3.3-70b-versatile"
                     
                     chat_completion = client.chat.completions.create(
                         messages=[
@@ -40,7 +37,7 @@ if api_key:
                     )
                     
                     answer = chat_completion.choices[0].message.content
-                    st.success("الإجابة:")
+                    st.success(f"الإجابة (عبر نموذج {selected_model}):")
                     st.write(answer)
             else:
                 st.warning("الرجاء كتابة سؤال أولاً.")
