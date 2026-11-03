@@ -1,70 +1,118 @@
 import streamlit as st
 
 st.set_page_config(
-    page_title="VÆRIN Neural Canvas",
+    page_title="VÆRIN AI",
     page_icon="⚡",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
 
-st.markdown('<style>html, body, .stApp { background-color: #000000 !important; color: #f4f4f5; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }</style>', unsafe_allow_html=True)
-st.markdown('<style>@keyframes floatGlow { 0%, 100% { text-shadow: 0 0 12px rgba(255, 255, 255, 0.6); } 50% { text-shadow: 0 0 22px rgba(255, 255, 255, 0.9); } }</style>', unsafe_allow_html=True)
-st.markdown('<style>.grok-title { font-size: 18px; font-weight: 800; color: #ffffff; animation: floatGlow 3s infinite ease-in-out; }</style>', unsafe_allow_html=True)
-st.markdown('<style>.grok-sub { font-size: 11px; color: #a1a1aa; margin-bottom: 12px; }</style>', unsafe_allow_html=True)
-st.markdown('<style>.grok-card { background: #09090b; border: 1px solid #27272a; border-radius: 10px; padding: 12px; margin-bottom: 10px; }</style>', unsafe_allow_html=True)
-st.markdown('<style>.stButton>button { background: #ffffff !important; color: #000000 !important; font-weight: 800 !important; border-radius: 8px !important; border: none !important; padding: 6px 12px !important; font-size: 12px !important; width: 100%; }</style>', unsafe_allow_html=True)
-st.markdown('<style>.stTextInput input { background-color: #09090b !important; color: #ffffff !important; border: 1px solid #27272a !important; border-radius: 8px !important; }</style>', unsafe_allow_html=True)
-st.markdown('<style>#MainMenu {visibility: hidden;} footer {visibility: hidden;}</style>', unsafe_allow_html=True)
+# --- تصميم واجهة Grok الحقيقية (أسود داكن، رمادي، وأبيض نقي) ---
+st.markdown("""
+<style>
+html, body, .stApp {
+    background-color: #000000 !important;
+    color: #e7e9ea;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+.grok-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #2f3336;
+    margin-bottom: 15px;
+}
+.grok-logo {
+    font-size: 17px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.3px;
+}
+.chat-bubble-ai {
+    background: #16181c;
+    border: 1px solid #2f3336;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    color: #e7e9ea;
+    line-height: 1.5;
+}
+.chat-bubble-user {
+    background: #202327;
+    border: 1px solid #3f4448;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    color: #ffffff;
+    line-height: 1.5;
+}
+.stButton>button {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-weight: 700 !important;
+    border-radius: 20px !important;
+    border: none !important;
+    padding: 4px 12px !important;
+    font-size: 11px !important;
+}
+.stTextInput input {
+    background-color: #16181c !important;
+    color: #ffffff !important;
+    border: 1px solid #2f3336 !important;
+    border-radius: 20px !important;
+    padding: 10px 15px !important;
+}
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+</style>
+""", unsafe_allow_html=True)
 
 if "mode" not in st.session_state:
     st.session_state.mode = "chat"
 
-# صف العرض العلوي: العنوان يساراً وتبويب التدريب أقصى اليسار فوق
-top_c1, top_c2 = st.columns([2, 1])
-
-with top_c1:
-    st.markdown('<div class="grok-title">⚡ VÆRIN NEURAL</div>', unsafe_allow_html=True)
-
-with top_c2:
+# --- الهيدر العلوي مطابق تماماً لواجهة Grok ---
+col1, col2 = st.columns([3, 1])
+with col1:
+    st.markdown('<div class="grok-logo">⚡ VÆRIN</div>', unsafe_allow_html=True)
+with col2:
     if st.session_state.mode == "chat":
-        if st.button("🎯 التدريب"):
+        if st.button("الوضع الفني"):
             st.session_state.mode = "training"
             st.rerun()
     else:
-        if st.button("💬 المحادثة"):
+        if st.button("رجوع للشات"):
             st.session_state.mode = "chat"
             st.rerun()
 
-st.write("---")
-
+# --- 1. وضع التدريب أو الكاميرا (يفتح فقط عند الضغط على الزر العلوي) ---
 if st.session_state.mode == "training":
-    st.markdown('<div class="grok-sub">قسم تدريب المستخدم والتحليلات البصرية</div>', unsafe_allow_html=True)
+    st.markdown("<p style='font-size: 12px; color: #71767b;'>وضع التدريب والتوجيه البصري</p>", unsafe_allow_html=True)
+    st.markdown('<div class="chat-bubble-ai">هنا يمكنك تفعيل كاميرا التتبع أو مراجعة مسارات التدريب البصري بعيداً عن الشات الرئيسي.</div>', unsafe_allow_html=True)
     
-    st.markdown('<div class="grok-card"><h3 style="color: #ffffff; font-size: 13px;">✏️ مسار أساسيات الخطوط</h3><p style="color: #a1a1aa; font-size: 11px;">ضبط ثبات اليد وبناء الأشكال.</p></div>', unsafe_allow_html=True)
-    st.markdown('<div class="grok-card"><h3 style="color: #ffffff; font-size: 13px;">📸 كاميرا التتبع الفوري</h3><p style="color: #a1a1aa; font-size: 11px;">التقط صورة لورقة الرسم لتقييم الخطوط.</p></div>', unsafe_allow_html=True)
-    
-    cam = st.camera_input("التقط صورة للرسمة:")
+    cam = st.camera_input("التقط صورة:")
     if cam:
-        st.success("⚡ تم فحص الرسمة بنجاح.")
+        st.success("تم استقبال الصورة وتحليلها بنجاح.")
 
+# --- 2. واجهة الشات الأساسية (مطابقة لـ Grok تماماً بدون أي دوشة) ---
 else:
-    st.markdown('<div class="grok-sub">المساعد الذكي الفني - اسأل واستشر حول الرسم</div>', unsafe_allow_html=True)
-    
     if "messages" not in st.session_state:
         st.session_state.messages = [
-            {"role": "ai", "content": "أهلاً بك! أنا عقل VÆRIN الذكي. اطرح علي أي سؤال بخصوص تقنيات الرسم، التظليل، أو توزيع الضوء والظلال."}
+            {"role": "ai", "content": "أهلاً بك. أنا عقل VÆRIN. كيف يمكنني مساعدتك اليوم؟"}
         ]
 
     for msg in st.session_state.messages:
         if msg["role"] == "ai":
-            st.markdown(f'<div class="grok-card"><span style="font-size: 10px; color: #a1a1aa;">🤖 VÆRIN AI</span><p style="font-size: 12px; margin-top: 3px; color: #f4f4f5;">{msg["content"]}</p></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="chat-bubble-ai"><b>VÆRIN:</b><br>{msg["content"]}</div>', unsafe_allow_html=True)
         else:
-            st.markdown(f'<div class="grok-card" style="background: #18181b;"><span style="font-size: 10px; color: #a1a1aa;">👤 أنت</span><p style="font-size: 12px; margin-top: 3px; color: #ffffff;">{msg["content"]}</p></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="chat-bubble-user"><b>أنت:</b><br>{msg["content"]}</div>', unsafe_allow_html=True)
 
-    user_q = st.text_input("اكتب رسالتك للنموذج:", placeholder="اسأل عن أي مهارة فنية...")
-    if st.button("إرسال الاستفسار"):
-        if user_q.strip():
-            st.session_state.messages.append({"role": "user", "content": user_q})
-            reply = f"لتحسين مهارة '{user_q}'، أنصحك بالتركيز على إيقاع حركة اليد والتحكم بتدرجات الضوء."
+    user_input = st.text_input("اطرح سؤالاً أو استفساراً...", placeholder="اسأل أي شيء...", key="chat_input")
+    if st.button("إرسال", key="send_btn"):
+        if user_input.strip():
+            st.session_state.messages.append({"role": "user", "content": user_input})
+            reply = f"لقد استلمت استفسارك حول '{user_input}'. أنا جاهز للتحليل وتقديم الإجابة الفورية."
             st.session_state.messages.append({"role": "ai", "content": reply})
             st.rerun()
