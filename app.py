@@ -32,7 +32,6 @@ st.markdown("""
         border-color: #ffffff;
         transform: translateY(-2px);
     }
-    /* إخفاء عناصر ستريمليت الزائدة */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
@@ -49,7 +48,7 @@ if "chat_history" not in st.session_state:
 if "current_tab" not in st.session_state:
     st.session_state.current_tab = "المهن"
 
-# ترجمة واجهة المستخدم البسيطة
+# ترجمة واجهة المستخدم
 translations = {
     "العربية": {
         "welcome_intro": "أهلاً، أنا فيرين",
@@ -57,9 +56,7 @@ translations = {
         "tab_prof": "المهن العالمية",
         "tab_courses": "الكورسات الاحترافية",
         "tab_ai": "الرفيق الذكي (Live)",
-        "settings": "الإعدادات والذاكرة",
         "search_ph": "ابحث في المجالات...",
-        "send": "إرسال",
         "input_ph": "اسأل فيرين أي شيء..."
     },
     "English": {
@@ -68,16 +65,14 @@ translations = {
         "tab_prof": "Global Professions",
         "tab_courses": "Elite Courses",
         "tab_ai": "AI Assistant (Live)",
-        "settings": "Settings & Memory",
         "search_ph": "Search domains...",
-        "send": "Send",
         "input_ph": "Ask Vairen anything..."
     }
 }
 
 t = translations[st.session_state.lang]
 
-# 1. شاشة الانترو وتسجيل الدخول إذا لم يتم الدخول
+# 1. شاشة الانترو وتسجيل الدخول
 if not st.session_state.logged_in:
     st.markdown(f"""
     <div style="text-align: center; margin-top: 10vh;">
@@ -98,8 +93,8 @@ if not st.session_state.logged_in:
                 st.rerun()
     st.stop()
 
-# 2. التبويب العلوي الفخم (Settings, Memory, Language) بدون خلفية
-top_col1, top_col2, top_col3 = st.columns([2, 6, 2])
+# 2. التبويب العلوي الفخم
+top_col1, top_col3 = st.columns([8, 2])
 with top_col1:
     st.markdown(f"**⚡ Vairen** | أهلاً، {st.session_state.get('user_name', 'قيس')}")
 with top_col3:
@@ -116,7 +111,6 @@ tab1, tab2, tab3 = st.tabs([t['tab_prof'], t['tab_courses'], t['tab_ai']])
 # --- تبويب المهن العالمية ---
 with tab1:
     st.markdown(f"### {t['tab_prof']}")
-    search_query = st.text_input("Search", placeholder=t['search_ph'], label_visibility="collapsed")
     
     professions = [
         {
@@ -126,5 +120,73 @@ with tab1:
             "color": "#3b82f6"
         },
         {
-            "title_ar": "إدارة العلامات التجارية والتصميم الرقمي", "title_en": "Digital Brand Director",
-            "desc_ar": "ابتكار الهويات البصرية المتقدمة وتجربة المستخدم للمشاريع الضخمة.", "desc_en": "Creating advanced visual
+            "title_ar": "إدارة العلامات التجارية والتصميم", "title_en": "Digital Brand Director",
+            "desc_ar": "ابتكار الهويات البصرية المتقدمة وتجربة المستخدم.", "desc_en": "Creating advanced visual identities and enterprise UX.",
+            "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&auto=format&fit=crop&q=60",
+            "color": "#ec4899"
+        },
+        {
+            "title_ar": "هندسة النمذجة السحابية والسيبرانية", "title_en": "Cloud & Cyber Security",
+            "desc_ar": "حماية البنيات التحتية الرقمية وتأمين الخوادم.", "desc_en": "Securing digital infrastructures and global servers.",
+            "image": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=600&auto=format&fit=crop&q=60",
+            "color": "#10b981"
+        }
+    ]
+
+    cols = st.columns(3)
+    for i, p in enumerate(professions):
+        with cols[i % 3]:
+            title = p['title_ar'] if st.session_state.lang == "العربية" else p['title_en']
+            desc = p['desc_ar'] if st.session_state.lang == "العربية" else p['desc_en']
+            st.markdown(f"""
+            <div class="oled-card" style="border-top: 3px solid {p['color']};">
+                <img src="{p['image']}" style="width: 100%; height: 140px; object-fit: cover; border-radius: 8px; margin-bottom: 10px;">
+                <h4 style="margin: 0; color: #fff;">{title}</h4>
+                <p style="color: #888; font-size: 0.85rem; margin-top: 5px;">{desc}</p>
+            </div>
+            """, unsafe_allow_html=True)
+            if st.button("استشر حول المهنة", key=f"prof_{i}", use_container_width=True):
+                st.session_state.chat_history.append({"role": "user", "content": f"أريد خارطة طريق احترافية وشاملة للعمل في مجال: {title}"})
+                st.rerun()
+
+# --- تبويب الكورسات الاحترافية الحقيقية ---
+with tab2:
+    st.markdown(f"### {t['tab_courses']}")
+    courses = [
+        {
+            "title": "Vairen Masterclass: Advanced Enterprise Architecture",
+            "desc": "كورس شامل من الألف للياء لبناء أنظمة الويب الخارقة بأحدث التقنيات.",
+            "modules": ["1. بنية النظريات السحابية المتقدمة", "2. الأمان وحماية البيانات", "3. تحسين الأداء وسرعة الاستجابة الخارقة"],
+            "image": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=600&auto=format&fit=crop&q=60"
+        },
+        {
+            "title": "Global AI Integration & Prompt Engineering",
+            "desc": "تعلم كيفية دمج نماذج اللغات الضخمة وبناء وكلاء ذكاء اصطناعي مستقلين.",
+            "modules": ["1. أساسيات الهندسة العكسية للأوامر", "2. الربط المباشر مع واجهات البرمجة", "3. بناء نظام تفاعل حي (Live Assistant)"],
+            "image": "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=600&auto=format&fit=crop&q=60"
+        }
+    ]
+
+    for c in courses:
+        with st.container():
+            col_img, col_txt = st.columns([1, 3])
+            with col_img:
+                st.image(c['image'], use_column_width=True)
+            with col_txt:
+                st.markdown(f"#### {c['title']}")
+                st.write(c['desc'])
+                with st.expander("عرض أقسام الكورس (Modules)"):
+                    for m in c['modules']:
+                        st.markdown(f"- {m}")
+            st.divider()
+
+# --- تبويب الرفيق الذكي (AI Assistant / Live) ---
+with tab3:
+    st.markdown(f"### {t['tab_ai']}")
+    
+    for msg in st.session_state.chat_history:
+        with st.chat_message(msg["role"]):
+            st.markdown(msg["content"])
+            
+    if prompt := st.chat_input(t['input_ph']):
+        st.session_state.chat_history.
