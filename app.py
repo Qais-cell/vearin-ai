@@ -1,228 +1,130 @@
 import streamlit as st
+import requests
+import json
 
+# إعدادات الصفحة
 st.set_page_config(
-    page_title="Vaerin",
-    page_icon="✦",
+    page_title="Vairen",
+    page_icon="⚡",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# ==================== CSS محسن يحاكي Grok ====================
+# مفتاح Gemini
+API_KEY = "AQ.Ab8RN6Iq5EaT8cX5Sq5cxLfDHkKPcaTxITN0uJcsD_yZEleLAg"
+
+# تصميم OLED Black والأنيميشن عبر CSS
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
-
-    html, body, [class*="css"] {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-
     .stApp {
-        background-color: #f7f7f5;
+        background-color: #000000;
+        color: #ffffff;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
-
-    /* إخفاء عناصر Streamlit */
-    #MainMenu, footer, header {visibility: hidden;}
-    .stDeployButton {display: none;}
-
-    /* السايدبار */
-    section[data-testid="stSidebar"] {
-        background-color: #f0f0ee !important;
-        border-right: 1px solid #e5e5e3;
+    .oled-card {
+        background: #0a0a0a;
+        border: 1px solid #222222;
+        border-radius: 12px;
+        padding: 16px;
+        transition: all 0.3s ease;
     }
-
-    section[data-testid="stSidebar"] button {
-        background: transparent !important;
-        border: 1px solid #dcdcd9 !important;
-        border-radius: 12px !important;
-        color: #1a1a1a !important;
-        font-weight: 500 !important;
-        padding: 10px 14px !important;
-        margin-bottom: 6px !important;
-        transition: 0.15s !important;
+    .oled-card:hover {
+        border-color: #ffffff;
+        transform: translateY(-2px);
     }
-
-    section[data-testid="stSidebar"] button:hover {
-        background: #e8e8e5 !important;
-    }
-
-    /* الرسائل */
-    .user-bubble {
-        background: #e8e8e5;
-        color: #1a1a1a;
-        padding: 12px 18px;
-        border-radius: 20px;
-        margin: 10px 0 10px auto;
-        max-width: 70%;
-        width: fit-content;
-        font-size: 15.5px;
-        line-height: 1.5;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.04);
-    }
-
-    .assistant-bubble {
-        background: transparent;
-        color: #1a1a1a;
-        padding: 8px 4px;
-        margin: 10px 0;
-        max-width: 85%;
-        font-size: 15.5px;
-        line-height: 1.6;
-    }
-
-    .assistant-name {
-        font-weight: 600;
-        font-size: 14px;
-        color: #555;
-        margin-bottom: 4px;
-    }
-
-    /* الصفحة الرئيسية */
-    .hero {
-        text-align: center;
-        padding-top: 18vh;
-    }
-
-    .hero h1 {
-        font-size: 2.1rem;
-        font-weight: 500;
-        color: #1a1a1a;
-        margin-bottom: 8px;
-        letter-spacing: -0.6px;
-    }
-
-    .hero p {
-        color: #666;
-        font-size: 1rem;
-        margin-bottom: 32px;
-    }
-
-    /* أزرار الاقتراحات */
-    .stButton > button {
-        background: white !important;
-        border: 1px solid #e0e0de !important;
-        border-radius: 16px !important;
-        color: #333 !important;
-        font-weight: 450 !important;
-        padding: 12px 16px !important;
-        transition: 0.15s !important;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
-    }
-
-    .stButton > button:hover {
-        background: #f5f5f3 !important;
-        border-color: #ccc !important;
-        transform: translateY(-1px);
-    }
-
-    /* صندوق الإدخال */
-    .stChatInput {
-        border-radius: 24px !important;
-    }
-
-    div[data-testid="stChatInput"] {
-        background: transparent !important;
-    }
-
-    /* شريط علوي بسيط */
-    .top-bar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 12px 8px 8px 8px;
-        margin-bottom: 10px;
-    }
-
-    .logo {
-        font-size: 20px;
-        font-weight: 600;
-        color: #1a1a1a;
-        letter-spacing: -0.5px;
-    }
+    /* إخفاء عناصر ستريمليت الزائدة */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
 </style>
 """, unsafe_allow_html=True)
 
-# ==================== حالة الجلسة ====================
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-
+# إدارة حالة التطبيق (State)
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+if "lang" not in st.session_state:
+    st.session_state.lang = "العربية"
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
+if "current_tab" not in st.session_state:
+    st.session_state.current_tab = "المهن"
 
-# ==================== السايدبار ====================
-with st.sidebar:
-    st.markdown("### ✦ Vaerin")
-    st.markdown("")
-    
-    if st.button("＋  New chat", use_container_width=True):
-        st.session_state.messages = []
-        st.rerun()
-    
-    st.markdown("---")
-    st.caption("Recent chats")
-    
-    if st.session_state.chat_history:
-        for i, chat in enumerate(reversed(st.session_state.chat_history[-10:])):
-            short = chat[:38] + "..." if len(chat) > 38 else chat
-            st.button(short, key=f"h_{i}", use_container_width=True)
-    else:
-        st.caption("No chats yet")
+# ترجمة واجهة المستخدم البسيطة
+translations = {
+    "العربية": {
+        "welcome_intro": "أهلاً، أنا فيرين",
+        "start_btn": "بدء الاستخدام وتسجيل الحساب",
+        "tab_prof": "المهن العالمية",
+        "tab_courses": "الكورسات الاحترافية",
+        "tab_ai": "الرفيق الذكي (Live)",
+        "settings": "الإعدادات والذاكرة",
+        "search_ph": "ابحث في المجالات...",
+        "send": "إرسال",
+        "input_ph": "اسأل فيرين أي شيء..."
+    },
+    "English": {
+        "welcome_intro": "Welcome, I am Vairen",
+        "start_btn": "Get Started & Sign Up",
+        "tab_prof": "Global Professions",
+        "tab_courses": "Elite Courses",
+        "tab_ai": "AI Assistant (Live)",
+        "settings": "Settings & Memory",
+        "search_ph": "Search domains...",
+        "send": "Send",
+        "input_ph": "Ask Vairen anything..."
+    }
+}
 
-# ==================== المحتوى الرئيسي ====================
-if not st.session_state.messages:
-    # ========== الصفحة الرئيسية (مثل Grok) ==========
-    st.markdown("""
-    <div class="hero">
-        <h1>What should we explore?</h1>
-        <p>Vaerin is ready to help</p>
+t = translations[st.session_state.lang]
+
+# 1. شاشة الانترو وتسجيل الدخول إذا لم يتم الدخول
+if not st.session_state.logged_in:
+    st.markdown(f"""
+    <div style="text-align: center; margin-top: 10vh;">
+        <h1 style="font-size: 3rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 10px;">V A I R E N</h1>
+        <p style="color: #888; font-size: 1.2rem; margin-bottom: 30px;">{t['welcome_intro']}</p>
     </div>
     """, unsafe_allow_html=True)
-
-    # اقتراحات
-    suggestions = [
-        "Explain something complex simply",
-        "Write a creative short story",
-        "Help me plan my next trip",
-        "What is the meaning of life?"
-    ]
-
-    cols = st.columns(2)
-    for i, s in enumerate(suggestions):
-        with cols[i % 2]:
-            if st.button(s, key=f"s_{i}", use_container_width=True):
-                st.session_state.messages.append({"role": "user", "content": s})
+    
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        with st.form("login_form"):
+            user_name = st.text_input("اسم المستخدم / User Name", placeholder="Qais Abood")
+            user_email = st.text_input("البريد الإلكتروني / Email")
+            submitted = st.form_submit_button(t['start_btn'], use_container_width=True)
+            if submitted and user_name:
+                st.session_state.logged_in = True
+                st.session_state.user_name = user_name
                 st.rerun()
+    st.stop()
 
-else:
-    # ========== عرض المحادثة ==========
-    for msg in st.session_state.messages:
-        if msg["role"] == "user":
-            st.markdown(f'<div class="user-bubble">{msg["content"]}</div>', unsafe_allow_html=True)
-        else:
-            st.markdown(f'''
-                <div class="assistant-bubble">
-                    <div class="assistant-name">Vaerin</div>
-                    {msg["content"]}
-                </div>
-            ''', unsafe_allow_html=True)
+# 2. التبويب العلوي الفخم (Settings, Memory, Language) بدون خلفية
+top_col1, top_col2, top_col3 = st.columns([2, 6, 2])
+with top_col1:
+    st.markdown(f"**⚡ Vairen** | أهلاً، {st.session_state.get('user_name', 'قيس')}")
+with top_col3:
+    selected_lang = st.selectbox("Language", ["العربية", "English"], label_visibility="collapsed")
+    if selected_lang != st.session_state.lang:
+        st.session_state.lang = selected_lang
+        st.rerun()
 
-# ==================== الإدخال ====================
-prompt = st.chat_input("What do you want to know?")
+st.divider()
 
-if prompt:
-    st.session_state.messages.append({"role": "user", "content": prompt})
+# شريط التبويبات الرئيسي
+tab1, tab2, tab3 = st.tabs([t['tab_prof'], t['tab_courses'], t['tab_ai']])
+
+# --- تبويب المهن العالمية ---
+with tab1:
+    st.markdown(f"### {t['tab_prof']}")
+    search_query = st.text_input("Search", placeholder=t['search_ph'], label_visibility="collapsed")
     
-    if prompt not in st.session_state.chat_history:
-        st.session_state.chat_history.append(prompt)
-
-    # ========== هنا تربط نموذجك الحقيقي ==========
-    with st.spinner(""):
-        # استبدل هذا الجزء بكود نموذجك
-        response = f"""This is still a placeholder from **Vaerin**.
-
-You said: "{prompt}"
-
-Replace this section with your actual model code."""
-        
-        st.session_state.messages.append({"role": "assistant", "content": response})
-    
-    st.rerun()
+    professions = [
+        {
+            "title_ar": "هندسة أنظمة الذكاء الاصطناعي", "title_en": "AI Systems Architect",
+            "desc_ar": "تصميم نماذج التعلم العميق وهندسة البيانات الكبرى.", "desc_en": "Designing deep learning models and big data pipelines.",
+            "image": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&auto=format&fit=crop&q=60",
+            "color": "#3b82f6"
+        },
+        {
+            "title_ar": "إدارة العلامات التجارية والتصميم الرقمي", "title_en": "Digital Brand Director",
+            "desc_ar": "ابتكار الهويات البصرية المتقدمة وتجربة المستخدم للمشاريع الضخمة.", "desc_en": "Creating advanced visual
